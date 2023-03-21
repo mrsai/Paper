@@ -1,0 +1,165 @@
+/************************************************************
+** 请将全局样式拷贝到项目的全局 CSS 文件或者当前页面的顶部 **
+** 否则页面将无法正常显示                                  **
+************************************************************/
+
+view,
+image,
+text {
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.justify-start {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.justify-center {
+  display: flex;
+  justify-content: center;
+}
+
+.justify-end {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.justify-evenly {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.justify-around {
+  display: flex;
+  justify-content: space-around;
+}
+
+.justify-between {
+  display: flex;
+  justify-content: space-between;
+}
+
+.items-start {
+  display: flex;
+  align-items: flex-start;
+}
+
+.items-center {
+  display: flex;
+  align-items: center;
+}
+
+.items-end {
+  display: flex;
+  align-items: flex-end;
+}
+.items-full {
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+.relative{
+  position: relative;
+}
+.height-100vh {
+  height: 100vh;
+}
+.height-100p{
+  height: 100%;
+}
+.flex-fourth-grow > div:nth-child(4){
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+// 生成的一些原子样式
+@each $i in 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1 {
+  [bga#{$i * 10}] { 
+    background-color: rgba(0, 0, 0, $i);
+  }
+}
+
+@each $style in (primary $background-color-primary, secondary $background-color-secondary, tertiary $background-color-tertiary) {
+  [bg-#{nth($style, 1)}] {
+    background-color: #{nth($style, 2)};
+  }
+}
+
+@for $i from 3 through 12 {
+  [radius-#{$i}] { 
+    border-radius: #{$i}px;
+    overflow: hidden;
+  }
+}
+
+[circle] {
+  border-radius: 100rem;
+}
+
+@each $style in (primary $color-text-primary, secondary $color-text-secondary, tertiary $color-text-tertiary, quaternary $color-text-quaternary) {
+  [font-#{nth($style, 1)}] {
+    color: #{nth($style, 2)};
+  }
+}
+
+@for $i from 12 through 30 {
+  [fz-#{$i * 2}] { 
+    font-size: #{$i * 2}px;
+  }
+}
+
+$direction: (l left, r right, t top, b bottom);
+@for $i from 1 through 30 {
+  @each $type in m, p, v, h, a{
+    
+    @if $type == m {
+      @each $d in $direction{
+        [m-#{nth($d, 1)}#{$i}] {
+          margin-#{nth($d, 2)}: #{$i}px;
+        }
+      }
+    }
+
+    @else if $type == p {
+      @each $d in $direction{
+        [p#{nth($d, 1)}#{$i}] {
+          padding-#{nth($d, 2)}: #{$i}px;
+        }
+      }
+    }
+
+    @else if $type == h {
+      [ph-#{$i}] {
+        padding-left: #{$i}px;
+        padding-right: #{$i}px;
+      }
+
+      [mh-#{$i}] {
+        margin-left: #{$i}px;
+        margin-right: #{$i}px;
+      }
+    }
+
+    @else if $type == v {
+      [pv-#{$i}] {
+        padding-top: #{$i}px;
+        padding-bottom: #{$i}px;
+      }
+    }
+
+    @else {
+      [pa-#{$i}] {
+        padding: #{$i}px;
+      }
+    }
+  }
+}
