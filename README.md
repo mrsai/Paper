@@ -1,41 +1,27 @@
-<div align="center">
+## Markdown and Rich Text Editor
 
-![vutron-logo](src/renderer/public/images/vutron-logo.webp)
+Markdown is a lightweight markup language that allows you to format text using simple syntax. It is commonly used for creating documentation, notes, and web pages. Rich text editors, on the other hand, are more complex and allow for more advanced formatting options such as font styles, colors, and tables. While markdown is simpler and easier to learn, rich text editors offer more flexibility and customization options.
 
-Quick Start Templates for **[Vite](https://vitejs.dev)** + **[Vue 3](https://vuejs.org)** + **[Electron](https://www.electronjs.org)**
+## 开发环境的安装
 
-[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/jooy2/vutron/blob/master/LICENSE) ![Programming Language Usage](https://img.shields.io/github/languages/top/jooy2/vutron) ![github repo size](https://img.shields.io/github/repo-size/jooy2/vutron) ![Stars](https://img.shields.io/github/stars/jooy2/vutron?style=social) ![Commit Count](https://img.shields.io/github/commit-activity/y/jooy2/vutron) ![Line Count](https://img.shields.io/tokei/lines/github/jooy2/vutron) [![Followers](https://img.shields.io/github/followers/jooy2?style=social)](https://github.com/jooy2)
+    默认node版本18.15.0
 
-![vutron-logo](.github/resources/vutron-sample.webp)
+    electron 安装在某些情况下可能失败。可以按照如下的办法尝试。
 
-**Vutron** is a preconfigured template for developing `Electron` cross-platform desktop apps. It uses `Vue 3` and allows you to build a fast development environment with little effort.
+    打开 ~/.npmrc文件中，单独设置Electron的镜像。添加如下一行
 
-</div>
+    electron_mirror="https://npm.taobao.org/mirrors/electron/"
 
-## Advantages of use
+## 项目模板
 
-- ✅ You can build immediately without any presets, so you can develop quickly.
-- ✅ It is being maintained quickly to be compatible with the latest `Vue` and `Electron`, as well as many modules.
-- ✅ There is no need to worry about layout and data management by using various additional templates.
+    https://github.com/jooy2/vutron
 
-## Features
+## 定制安全策略
 
-- ⚡️ Rapid development through hot-reload
-- ⚡️ Cross-platform development and build support
-- ⚡️ Multilingual support
-- ⚡️ Support for themes (dark & light)
-- ⚡️ Basic layout manager
-- ⚡️ Global state management through the Pinia store
-- ⚡️ TypeScript support
+    Electron Security Warning (Insecure Content-Security-Policy) This renderer process has either no Content Security
+    参考：https://juejin.cn/post/6844904174434385933
 
-## [Getting Started & Documentation](https://vutron.jooy2.com)
+## 资源
 
-For complete documentation including installation instructions and basic usage, please refer to each item in the link below: https://vutron.jooy2.com
-
-## Contribute
-
-You can report issues on [GitHub Issue](https://github.com/jooy2/vutron/issues). You can also request a pull to fix bugs and add frequently used features.
-
-## License
-
-Copyright © 2022-2023 [Jooy2](https://jooy2.com) <[jooy2.contact@gmail.com](mailto:jooy2.contact@gmail.com)> Released under the MIT license.
+    右键菜单  https://imengyu.top/pages/vue3-context-menu-docs/
+    文件结构和UI element-pluss

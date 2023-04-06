@@ -9,11 +9,11 @@ import ja from '@/renderer/locales/ja.json'
 import fr from '@/renderer/locales/fr.json'
 import ru from '@/renderer/locales/ru.json'
 import pt from '@/renderer/locales/pt.json'
-import { getCurrentLocale } from '@/renderer/utils'
+// import { getCurrentLocale } from '@/renderer/utils'
 
 export default createI18n({
   legacy: false,
-  locale: getCurrentLocale(),
+  locale: 'zhHans',
   fallbackLocale: 'en',
   globalInjection: true,
   messages: {

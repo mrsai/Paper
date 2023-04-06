@@ -3,12 +3,15 @@ import { defineConfig } from 'vite'
 import electronPlugin from 'vite-plugin-electron'
 import rendererPlugin from 'vite-plugin-electron-renderer'
 import eslintPlugin from 'vite-plugin-eslint'
-import vuetifyPlugin from 'vite-plugin-vuetify'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import vue from '@vitejs/plugin-vue'
 import { rmSync } from 'fs'
 import { resolve, dirname } from 'path'
 import { builtinModules } from 'module'
+// auto import element-plus components
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 export default defineConfig(() => {
   rmSync('dist', { recursive: true, force: true })
@@ -36,10 +39,6 @@ export default defineConfig(() => {
     plugins: [
       vue(),
       vueJsx(),
-      // Docs: https://github.com/vuetifyjs/vuetify-loader
-      vuetifyPlugin({
-        autoImport: true
-      }),
       // Docs: https://github.com/gxmari007/vite-plugin-eslint
       eslintPlugin(),
       // Docs: https://github.com/electron-vite/vite-plugin-electron
@@ -71,7 +70,13 @@ export default defineConfig(() => {
           }
         }
       ]),
-      rendererPlugin()
+      rendererPlugin(),
+      AutoImport({
+        resolvers: [ElementPlusResolver()],
+      }),
+      Components({
+        resolvers: [ElementPlusResolver()],
+      }),
     ]
   }
 })
