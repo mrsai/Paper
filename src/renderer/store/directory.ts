@@ -11,7 +11,7 @@ export const useDirectoryStore = defineStore('Directory', {
       expandedKey: []
     } as IDirectory),
   getters: {
-    selectedFile: (state) => state.list
+    selectedFile: (state) => state.list?.find((it) => it.id === state.selectedKey)
   },
   actions: {
     create(data: any) {
@@ -25,7 +25,9 @@ export const useDirectoryStore = defineStore('Directory', {
         updateAt: Date.now().toString(),
         origin: false,
         isEditing: false,
-        ext: EExt.MarkDown
+        ext: EExt.MarkDown,
+        icon: ['fa-solid', 'fa-folder'],
+        expIcon: ['fa-solid', 'fa-folder-open']
       } as IDirectoryItem
       Object.assign(item, data)
       // remove ext if type is folder
@@ -35,11 +37,11 @@ export const useDirectoryStore = defineStore('Directory', {
       }
       if (item.type === ETypes.File) {
         item.name = `${item.name}`
+        item.icon = ['far', 'file']
         delete item.children
       }
       // add to list
       if (item.pid) {
-        // eslint-disable-next-line no-debugger
         const parent = this.list?.find((it) => it.id === item.pid)
         if (parent) {
           if (!parent.children) parent.children = []
@@ -64,7 +66,6 @@ export const useDirectoryStore = defineStore('Directory', {
       }
     },
     del(data: any) {
-      // remove from tree list
       const id = data.id || data
       for (const i in this.list) {
         if (this.list[i].id === id) {

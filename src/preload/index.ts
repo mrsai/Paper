@@ -1,7 +1,17 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
 // Whitelist of valid channels used for IPC communication (Send message from Renderer to Main)
-const mainAvailChannels: string[] = ['msgRequestGetVersion', 'msgOpenExternalLink']
+const mainAvailChannels: string[] = [
+  'msgRequestGetVersion',
+  'msgOpenExternalLink',
+  'create-local-folder',
+  'create-local-file',
+  'open-local-file',
+  'open-file-dialog',
+  'get-unused-name',
+  'rename-folder',
+  'rename-file'
+]
 const rendererAvailChannels: string[] = ['msgReceivedVersion']
 
 contextBridge.exposeInMainWorld('mainApi', {

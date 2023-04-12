@@ -1,5 +1,7 @@
 import { h } from 'vue'
 import { ETypes } from '@/renderer/types/sidebar'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
 // ⌘（command）
 // ⌥（option）
 // ⇧（shift）
@@ -17,8 +19,10 @@ export const sidebarContextmenu = (event: any, cb: any, type: any) => {
   } else {
     filters = ['rename', 'sync', 'extractTranslate', 'generateBlog', 'delete']
   }
+
+  // ;<font-awesome-icon icon="fa-solid fa-user-secret" />
   const defaultMenu = {
-    theme: 'mac',
+    // theme: 'mac',
     x: event.x,
     y: event.y,
     zIndex: 3,
@@ -26,7 +30,8 @@ export const sidebarContextmenu = (event: any, cb: any, type: any) => {
       {
         key: 'createMarkdown',
         label: '新建Markdown',
-        icon: 'el-icon-edit',
+        // eslint-disable-next-line no-undef
+        // icon: h(FontAwesomeIcon, { icon: 'fa fa-folder' }),
         onClick: cb.createMarkdown
       },
       {
@@ -62,7 +67,6 @@ export const sidebarContextmenu = (event: any, cb: any, type: any) => {
       {
         key: 'generateBlog',
         label: '生成博客',
-        icon: 'el-icon-edit',
         onClick: cb.generateBlog
       },
       {

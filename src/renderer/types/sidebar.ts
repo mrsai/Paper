@@ -14,6 +14,8 @@ export interface IDirectoryItem {
   isEditing: boolean
   isExpanded?: boolean
   ext?: IExt
+  icon?: string[]
+  expIcon?: string[]
 }
 
 export type IFile = Omit<IDirectoryItem, 'children' | 'isExpanded'>

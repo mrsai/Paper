@@ -4,7 +4,7 @@ import { DefaultLayout } from '@/renderer/components/layout'
 
 <template>
   <DefaultLayout>
-    <router-view />
+    <router-view></router-view>
   </DefaultLayout>
 </template>
 

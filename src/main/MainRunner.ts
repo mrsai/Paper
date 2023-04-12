@@ -17,7 +17,10 @@ export const createMainWindow = async (mainWindow: BrowserWindow): Promise<Brows
     width: Constants.IS_DEV_ENV ? 1500 : 1200,
     height: 650,
     useContentSize: true,
-    webPreferences: Constants.DEFAULT_WEB_PREFERENCES
+    webPreferences: Constants.DEFAULT_WEB_PREFERENCES,
+    frame: false,
+    titleBarStyle: 'hidden',
+    trafficLightPosition: { x: 16, y: 10 }
   })
 
   mainWindow.setMenu(null)

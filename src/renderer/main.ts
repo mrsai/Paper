@@ -1,17 +1,10 @@
 import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-
+import { setupStore } from '@/renderer/boots/init-store'
+import { setupRouter } from '@/renderer/boots/init-router'
+import { setupUiLibrary } from '@/renderer/boots/init-ui'
+import { setupLanguage } from '@/renderer/boots/init-lang'
+import { setupIcons } from '@/renderer/boots/init-icon'
 import App from '@/renderer/App.vue'
-import router from '@/renderer/router'
-import i18n from '@/renderer/plugins/i18n'
-
-import ElementPlus from 'element-plus'
-import 'element-plus/theme-chalk/dark/css-vars.css'
-import '@/renderer/assets/styles/dark-vars.css'
-
-// Add API key defined in contextBridge to window object type
-import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
-import '@/renderer/assets/styles/index.scss'
 declare global {
   // eslint-disable-next-line no-unused-vars
   interface Window {
@@ -19,8 +12,16 @@ declare global {
   }
 }
 
-const app = createApp(App)
+const run = async () => {
+  const app = createApp(App)
 
-app.use(i18n).use(router).use(createPinia()).use(ElementPlus, { zIndex: 3000 })
+  setupStore(app)
+  setupRouter(app)
+  setupUiLibrary(app)
+  setupLanguage(app)
+  setupIcons(app)
 
-app.mount('#app')
+  app.mount('#app')
+}
+
+run()

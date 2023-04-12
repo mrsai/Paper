@@ -4,13 +4,12 @@ import MenuTree from '@/renderer/components/elements/MenuTree.vue'
 
 <template>
   <div class="sidebar">
-    <MenuTree style="height: 100vh" />
+    <MenuTree />
     <div></div>
   </div>
 </template>
 <style>
 .sidebar {
   height: 100%;
-  background-color: #f5f7fa;
 }
 </style>

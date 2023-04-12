@@ -33,6 +33,11 @@
     "node": ">=16.0.0"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.4.0",
+    "@fortawesome/free-brands-svg-icons": "^6.4.0",
+    "@fortawesome/free-regular-svg-icons": "^6.4.0",
+    "@fortawesome/free-solid-svg-icons": "^6.4.0",
+    "@fortawesome/vue-fontawesome": "^3.0.3",
     "@imengyu/vue3-context-menu": "^1.2.3",
     "@vueuse/core": "^9.13.0",
     "element-plus": "^2.3.2",

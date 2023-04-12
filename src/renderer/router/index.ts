@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router/dist/vue-router.esm-bundler'
-import { MainScreen, ErrorScreen, SecondScreen } from '@/renderer/screens'
+import { MainScreen, ErrorScreen, SettingsScreen } from '@/renderer/screens'
 
 export default createRouter({
   history: createWebHashHistory(),
@@ -12,8 +12,8 @@ export default createRouter({
       }
     },
     {
-      path: '/second',
-      component: SecondScreen,
+      path: '/settings',
+      component: SettingsScreen,
       meta: {
         titleKey: 'title.second'
       }

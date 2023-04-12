@@ -3,31 +3,40 @@ import { nextTick } from 'vue'
 import { useDirectoryStore } from '@/renderer/store/directory'
 import { ETypes, EExt } from '@/renderer/types/sidebar'
 import { storeToRefs } from 'pinia'
-import { Folder, FolderOpened } from '@element-plus/icons-vue'
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { sidebarContextmenu } from '@/renderer/components/elements/contextMenu'
-
+import {
+  createLocalFolder,
+  selectFolder,
+  getUnusedName,
+  renameFolder,
+  createLocalFile
+} from '@/renderer/utils'
+import { ElMessage, ElMessageBox } from 'element-plus'
 const { list, selectedKey, expandedKey } = storeToRefs(useDirectoryStore())
 const { create, update, del } = useDirectoryStore()
 const onContextMenu = (event: any, data: any, node: any) => {
-  console.log('12212', 12212)
-
   const menu = sidebarContextmenu(
     event,
     {
-      createMarkdown() {
-        create({
+      async createMarkdown() {
+        console.log('data', data)
+        const name = await getUnusedName(data.path, '新建文件', EExt.MarkDown)
+        const markdown = {
           pid: data.id,
-          name: '新建文件',
+          name,
           type: ETypes.File,
           ext: EExt.MarkDown,
           isEditing: true
-        })
+        }
+        await createLocalFile(markdown)
+        create(markdown)
         expandedKey.value = [data.id]
         nextTick(() => {
           const treeRef = document.getElementById('treeRef')
           const input = treeRef?.querySelector('input')
           input?.focus()
+          input?.select()
         })
       },
       createRichText() {
@@ -44,16 +53,24 @@ const onContextMenu = (event: any, data: any, node: any) => {
           input?.focus()
         })
       },
-      createFolder() {
-        create({
-          name: '新建文件夹',
-          type: ETypes.Folder
-        })
-        nextTick(() => {
-          const treeRef = document.getElementById('treeRef')
-          const input = treeRef?.querySelector('input')
-          input?.focus()
-        })
+      async createFolder() {
+        const res = await selectFolder()
+        if (res) {
+          const name = await getUnusedName(res, '未命名', '')
+          const folder = {
+            name,
+            type: ETypes.Folder,
+            isEditing: true,
+            path: res
+          }
+          await createLocalFolder(folder)
+          create(folder)
+          nextTick(() => {
+            const treeRef = document.getElementById('treeRef')
+            const input = treeRef?.querySelector('input')
+            input?.focus()
+          })
+        }
       },
       rename() {
         update({
@@ -67,7 +84,15 @@ const onContextMenu = (event: any, data: any, node: any) => {
         })
       },
       delete() {
-        del(data.id)
+        ElMessageBox.confirm('确定要删除吗？该操作不会删除本地的文件。', '', {
+          confirmButtonText: '删除',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(() => {
+            del(data.id)
+          })
+          .catch(() => {})
       },
       extractTranslate() {},
       sync() {},
@@ -78,19 +103,28 @@ const onContextMenu = (event: any, data: any, node: any) => {
   ContextMenu.showContextMenu(menu)
 }
 
-const defaultProps = {
-  children: 'children',
-  label: 'name'
-}
-
-const handleBlur = (event: any, node: any, data: any) => {
+const handleBlur = async (event: any, node: any, data: any) => {
   const name = event.target.value?.trim()
+  const oldName = data.name
   if (name) {
-    update({
-      ...data,
-      name,
-      isEditing: false
-    })
+    if (name !== oldName) {
+      const res = await renameFolder(data, name)
+      if (res.success) {
+        update({
+          ...data,
+          name,
+          isEditing: false
+        })
+      } else {
+        console.log(res.msg)
+        ElMessage.error(res.msg)
+      }
+    } else {
+      update({
+        ...data,
+        isEditing: false
+      })
+    }
   }
 }
 
@@ -100,14 +134,18 @@ const handleSelected = (data: any) => {
 </script>
 
 <template>
-  <div class="flex-col">
+  <div class="flex-col height-100p">
     <el-tree
       id="treeRef"
+      :style="{ minHeight: 0 }"
       node-key="id"
       empty-text=""
       :current-node-key="selectedKey"
       :data="list"
-      :props="defaultProps"
+      :props="{
+        children: 'children',
+        label: 'name'
+      }"
       :highlight-current="true"
       :expand-on-click-node="false"
       :check-on-click-node="true"
@@ -117,12 +155,14 @@ const handleSelected = (data: any) => {
     >
       <template #default="{ node, data }">
         <div class="custom-tree-node">
-          <el-icon v-if="data.type === ETypes.Folder" :size="20" class="menu-icon"
-            ><FolderOpened v-if="node.expanded" /><Folder v-else
-          /></el-icon>
-          <div v-if="!data.isEditing">{{ node.label }}</div>
+          <font-awesome-icon
+            class="menu-icon-fa fa-fw"
+            :icon="node.expanded ? data.expIcon : data.icon"
+          />
+          <div v-if="!data.isEditing" class="custom-title">{{ node.label }}{{ data.ext }}</div>
           <input
             v-else
+            class="custom-input"
             type="text"
             :value="data.name"
             @blur="handleBlur($event, node, data)"
@@ -131,10 +171,17 @@ const handleSelected = (data: any) => {
         </div>
       </template>
     </el-tree>
-    <div @contextmenu.prevent.stop="onContextMenu($event, null, null)"></div>
+    <div class="custom-create" @contextmenu.prevent.stop="onContextMenu($event, {}, null)"></div>
   </div>
 </template>
 <style>
+.el-tree__empty-block {
+  min-height: 0;
+}
+.menu-icon-fa {
+  margin-right: 8px;
+  text-align: left;
+}
 .custom-tree-node {
   flex: 1;
   display: flex;
@@ -142,7 +189,22 @@ const handleSelected = (data: any) => {
   justify-content: start;
   padding: 10px 0;
 }
-.menu-icon {
-  margin-right: 8px;
+.custom-input {
+  border: none;
+  background-color: transparent;
+  width: 8em;
+}
+.custom-create {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  padding: 10px 0;
+}
+.custom-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 9em;
 }
 </style>
