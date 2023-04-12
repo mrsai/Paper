@@ -9,8 +9,11 @@ const mainAvailChannels: string[] = [
   'open-local-file',
   'open-file-dialog',
   'get-unused-name',
+  'save-directory',
+  'read-directory',
   'rename-folder',
-  'rename-file'
+  'rename-file',
+  'path-join'
 ]
 const rendererAvailChannels: string[] = ['msgReceivedVersion']
 

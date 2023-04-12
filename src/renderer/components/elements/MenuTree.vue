@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick } from 'vue'
+import { nextTick, ref } from 'vue'
 import { useDirectoryStore } from '@/renderer/store/directory'
 import { ETypes, EExt } from '@/renderer/types/sidebar'
 import { storeToRefs } from 'pinia'
@@ -10,47 +10,71 @@ import {
   selectFolder,
   getUnusedName,
   renameFolder,
-  createLocalFile
+  renameFile,
+  createLocalFile,
+  pathJoin,
+  saveDirectory,
+  readDirectory
 } from '@/renderer/utils'
 import { ElMessage, ElMessageBox } from 'element-plus'
 const { list, selectedKey, expandedKey } = storeToRefs(useDirectoryStore())
 const { create, update, del } = useDirectoryStore()
-const onContextMenu = (event: any, data: any, node: any) => {
+const treeRef = ref<any>(null)
+const treeInput = ref<any>(null)
+
+const handleContextMenu = (event: any, data: any, node: any) => {
   const menu = sidebarContextmenu(
     event,
     {
       async createMarkdown() {
-        console.log('data', data)
-        const name = await getUnusedName(data.path, '新建文件', EExt.MarkDown)
+        // 找到文件夹的路径
+        const path = await pathJoin(data.path, data.name)
+        // 获取一个未使用的文件名
+        const name = await getUnusedName(path, '新建文件', EExt.MarkDown)
         const markdown = {
           pid: data.id,
           name,
           type: ETypes.File,
           ext: EExt.MarkDown,
-          isEditing: true
+          isEditing: true,
+          path
         }
+        // 创建本地文件
         await createLocalFile(markdown)
+        // 创建文件结构数据
         create(markdown)
+        // 展开菜单
         expandedKey.value = [data.id]
         nextTick(() => {
-          const treeRef = document.getElementById('treeRef')
-          const input = treeRef?.querySelector('input')
-          input?.focus()
-          input?.select()
+          const t = setTimeout(() => {
+            treeInput.value = treeRef.value?.el$?.querySelector('input')
+            treeInput.value?.focus()
+            treeInput.value?.select()
+            clearTimeout(t)
+          }, 100)
         })
       },
-      createRichText() {
-        create({
+      async createRichText() {
+        const path = await pathJoin(data.path, data.name)
+        const name = await getUnusedName(path, '新建文件', EExt.RichText)
+        const richText = {
           pid: data.id,
-          name: '新建文件',
+          name,
           type: ETypes.File,
-          ext: EExt.RichText
-        })
+          ext: EExt.RichText,
+          isEditing: true,
+          path
+        }
+        await createLocalFile(richText)
+        create(richText)
         expandedKey.value = [data.id]
         nextTick(() => {
-          const treeRef = document.getElementById('treeRef')
-          const input = treeRef?.querySelector('input')
-          input?.focus()
+          const t = setTimeout(() => {
+            treeInput.value = treeRef.value?.el$?.querySelector('input')
+            treeInput.value?.focus()
+            treeInput.value?.select()
+            clearTimeout(t)
+          }, 100)
         })
       },
       async createFolder() {
@@ -66,9 +90,9 @@ const onContextMenu = (event: any, data: any, node: any) => {
           await createLocalFolder(folder)
           create(folder)
           nextTick(() => {
-            const treeRef = document.getElementById('treeRef')
-            const input = treeRef?.querySelector('input')
-            input?.focus()
+            treeInput.value = treeRef.value?.el$?.querySelector('input')
+            treeInput.value?.focus()
+            treeInput.value?.select()
           })
         }
       },
@@ -78,9 +102,9 @@ const onContextMenu = (event: any, data: any, node: any) => {
           isEditing: true
         })
         nextTick(() => {
-          const treeRef = document.getElementById('treeRef')
-          const input = treeRef?.querySelector('input')
-          input?.focus()
+          treeInput.value = treeRef.value?.el$?.querySelector('input')
+          treeInput.value?.focus()
+          treeInput.value?.select()
         })
       },
       delete() {
@@ -103,12 +127,17 @@ const onContextMenu = (event: any, data: any, node: any) => {
   ContextMenu.showContextMenu(menu)
 }
 
-const handleBlur = async (event: any, node: any, data: any) => {
+const handleRenameBlur = async (event: any, node: any, data: any) => {
   const name = event.target.value?.trim()
   const oldName = data.name
   if (name) {
     if (name !== oldName) {
-      const res = await renameFolder(data, name)
+      let res: any = null
+      if (data.type === ETypes.Folder) {
+        res = await renameFolder(data, name)
+      } else {
+        res = await renameFile(data, name)
+      }
       if (res.success) {
         update({
           ...data,
@@ -116,27 +145,40 @@ const handleBlur = async (event: any, node: any, data: any) => {
           isEditing: false
         })
       } else {
-        console.log(res.msg)
         ElMessage.error(res.msg)
+        treeInput.value?.focus()
+        treeInput.value?.select()
       }
     } else {
       update({
         ...data,
         isEditing: false
       })
+      treeInput.value?.focus()
+      treeInput.value?.select()
     }
+    saveDirectory(list.value)
   }
 }
 
-const handleSelected = (data: any) => {
+const handleUserSelected = (data: any) => {
   selectedKey.value = data.id
 }
+
+readDirectory().then((res) => {
+  try {
+    list.value = JSON.parse(res)
+  } catch (error) {
+    console.log(error)
+  }
+})
 </script>
 
 <template>
   <div class="flex-col height-100p">
     <el-tree
       id="treeRef"
+      ref="treeRef"
       :style="{ minHeight: 0 }"
       node-key="id"
       empty-text=""
@@ -150,8 +192,8 @@ const handleSelected = (data: any) => {
       :expand-on-click-node="false"
       :check-on-click-node="true"
       :default-expanded-keys="expandedKey"
-      @node-contextmenu="onContextMenu"
-      @current-change="handleSelected"
+      @node-contextmenu="handleContextMenu"
+      @current-change="handleUserSelected"
     >
       <template #default="{ node, data }">
         <div class="custom-tree-node">
@@ -165,13 +207,16 @@ const handleSelected = (data: any) => {
             class="custom-input"
             type="text"
             :value="data.name"
-            @blur="handleBlur($event, node, data)"
-            @keydown.enter="handleBlur($event, node, data)"
+            @blur="handleRenameBlur($event, node, data)"
+            @keydown.enter="handleRenameBlur($event, node, data)"
           />
         </div>
       </template>
     </el-tree>
-    <div class="custom-create" @contextmenu.prevent.stop="onContextMenu($event, {}, null)"></div>
+    <div
+      class="custom-create"
+      @contextmenu.prevent.stop="handleContextMenu($event, {}, null)"
+    ></div>
   </div>
 </template>
 <style>

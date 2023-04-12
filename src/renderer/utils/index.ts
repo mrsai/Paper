@@ -18,8 +18,8 @@ export default class Utils {
     return await window.mainApi.invoke('create-local-folder', folder)
   }
 
-  static async createLocalFile(folder: any): Promise<any> {
-    return await window.mainApi.invoke('create-local-file', folder)
+  static async createLocalFile(fileData: any): Promise<any> {
+    return await window.mainApi.invoke('create-local-file', fileData)
   }
 
   static async selectFolder(): Promise<any> {
@@ -41,6 +41,22 @@ export default class Utils {
   static async renameFolder(data: any, newName: string): Promise<any> {
     return await window.mainApi.invoke('rename-folder', JSON.stringify(data), newName)
   }
+
+  static async renameFile(data: any, newName: string): Promise<any> {
+    return await window.mainApi.invoke('rename-file', JSON.stringify(data), newName)
+  }
+
+  static async pathJoin(...paths: string[]): Promise<string> {
+    return await window.mainApi.invoke('path-join', ...paths)
+  }
+
+  static async saveDirectory(data: any): Promise<any> {
+    return await window.mainApi.send('save-directory', JSON.stringify(data))
+  }
+
+  static async readDirectory(): Promise<any> {
+    return await window.mainApi.invoke('read-directory')
+  }
 }
 
 export const {
@@ -50,5 +66,10 @@ export const {
   createLocalFolder,
   selectFolder,
   getUnusedName,
-  renameFolder
+  renameFolder,
+  renameFile,
+  createLocalFile,
+  pathJoin,
+  saveDirectory,
+  readDirectory
 } = Utils
