@@ -10,6 +10,8 @@ import 'element-plus/theme-chalk/src/message.scss'
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import '@/renderer/assets/styles/index.scss'
 
+import '@milkdown/theme-nord/style.css'
+
 export const setupUiLibrary = (app: App<Element>) => {
   app.use(ElementPlus, { zIndex: 3000 })
 }

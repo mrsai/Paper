@@ -5,6 +5,7 @@ import { setupUiLibrary } from '@/renderer/boots/init-ui'
 import { setupLanguage } from '@/renderer/boots/init-lang'
 import { setupIcons } from '@/renderer/boots/init-icon'
 import App from '@/renderer/App.vue'
+
 declare global {
   // eslint-disable-next-line no-unused-vars
   interface Window {

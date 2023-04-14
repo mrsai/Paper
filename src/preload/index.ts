@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
+import fse from 'fs-extra'
 
 // Whitelist of valid channels used for IPC communication (Send message from Renderer to Main)
 const mainAvailChannels: string[] = [
@@ -12,6 +13,8 @@ const mainAvailChannels: string[] = [
   'save-directory',
   'read-directory',
   'rename-folder',
+  'save-settings',
+  'get-settings',
   'rename-file',
   'path-join'
 ]

@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { useDark, useToggle } from '@vueuse/core'
+import { storeToRefs } from 'pinia'
+import { useSettingStore } from '@/renderer/store/settings'
+const { saveSetting } = useSettingStore()
+const { settings } = storeToRefs(useSettingStore())
 
 const isDark = useDark()
 const router = useRouter()
@@ -8,6 +12,10 @@ const toggleDark = useToggle(isDark)
 const command = Object.create(null)
 command.changeTheme = () => {
   toggleDark()
+}
+command.switchSidebar = () => {
+  settings.value.showSide = !settings.value.showSide
+  saveSetting()
 }
 command.settings = () => {
   router.push('/settings')
@@ -29,7 +37,7 @@ const handleCommand = (name: any) => {
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item command="settings">设置</el-dropdown-item>
-            <el-dropdown-item command="a">侧边栏&emsp;&emsp;CTRL+K</el-dropdown-item>
+            <el-dropdown-item command="switchSidebar">侧边栏&emsp;&emsp;CTRL+K</el-dropdown-item>
             <el-dropdown-item command="b">默认模式</el-dropdown-item>
             <el-dropdown-item command="c">简洁模式</el-dropdown-item>
             <el-dropdown-item command="changeTheme">切换主题</el-dropdown-item>

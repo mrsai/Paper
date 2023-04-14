@@ -125,7 +125,7 @@ const handleContextMenu = (event: any, data: any, node: any) => {
     data.type
   )
   ContextMenu.showContextMenu(menu)
-}          
+}
 
 const handleRenameBlur = async (event: any, node: any, data: any) => {
   const name = event.target.value?.trim()

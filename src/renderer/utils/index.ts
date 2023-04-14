@@ -57,6 +57,14 @@ export default class Utils {
   static async readDirectory(): Promise<any> {
     return await window.mainApi.invoke('read-directory')
   }
+
+  static async saveSettings(data: any): Promise<any> {
+    return await window.mainApi.send('save-settings', JSON.stringify(data))
+  }
+
+  static async getSettings(): Promise<any> {
+    return await window.mainApi.invoke('get-settings')
+  }
 }
 
 export const {
@@ -71,5 +79,7 @@ export const {
   createLocalFile,
   pathJoin,
   saveDirectory,
-  readDirectory
+  readDirectory,
+  getSettings,
+  saveSettings
 } = Utils

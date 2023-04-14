@@ -1,11 +1,20 @@
-<script setup lang="ts"></script>
 <template>
-  <div class="editor" contenteditable="true">
-    <h1>To Start Some Intruens Google</h1>
-  </div>
+  <MilkdownProvider>
+    <MilkdownEditor />
+  </MilkdownProvider>
 </template>
-<style>
-.editor {
-  margin: 30px 70px;
-}
-</style>
+
+<script lang="ts">
+import { defineComponent } from 'vue'
+import { MilkdownProvider } from '@milkdown/vue'
+import MilkdownEditor from './MilkdownEditor.vue'
+
+export default defineComponent({
+  name: 'MilkdownEditorWrapper',
+  components: {
+    MilkdownProvider,
+    MilkdownEditor
+  },
+  setup: () => {}
+})
+</script>

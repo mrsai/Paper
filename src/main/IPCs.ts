@@ -2,7 +2,6 @@ import fse from 'fs-extra'
 import { join } from 'path'
 import { BrowserWindow, ipcMain, shell, dialog, app } from 'electron'
 import Constants from './utils/Constants'
-import { da } from 'element-plus/es/locale'
 
 /*
  * IPC Communications
@@ -48,8 +47,6 @@ export default class IPCs {
 
     ipcMain.handle('create-local-file', async (event, { path, name, ext }) => {
       const filePath = join(path, `${name}${ext}`)
-      console.log('filePath', filePath)
-
       const res = fse.pathExistsSync(filePath)
       if (!res) {
         try {
@@ -145,6 +142,51 @@ export default class IPCs {
         throw err
       }
       return data ? JSON.parse(data) : []
+    })
+
+    ipcMain.handle('get-settings', async (event) => {
+      const filePath = join(app.getPath('appData'), app.name, 'user-settings.json')
+
+      try {
+        // 尝试读取文件内容
+        const data = await fse.readJson(filePath)
+        return data
+      } catch (err: any) {
+        if (err.code === 'ENOENT') {
+          // 如果文件不存在，则创建文件并写入初始化数据
+          const initData = {
+            theme: 'light',
+            showSide: true,
+            mode: 'normal',
+            lang: 'en',
+            server: '',
+            editor: {
+              theme: 'vs-dark',
+              fontSize: 14,
+              fontFamily: 'Consolas, "Courier New", monospace',
+              lineHeight: 20,
+              wordWrap: 'on',
+              backgroundColor: '#1e1e1e'
+            }
+          }
+          await fse.outputJson(filePath, initData)
+          return initData
+        } else {
+          // 如果出现其他错误，则抛出异常
+          throw err
+        }
+      }
+    })
+
+    ipcMain.on('save-settings', async (event, data) => {
+      const filePath = join(app.getPath('appData'), app.name, 'user-settings.json')
+      try {
+        fse.ensureFileSync(filePath)
+        fse.writeJsonSync(filePath, JSON.parse(data))
+      } catch (err) {
+        console.error(`Error writing file ${filePath}: ${err}`)
+        throw err
+      }
     })
   }
 }
