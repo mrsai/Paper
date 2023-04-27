@@ -1,20 +1,16 @@
 <template>
   <MilkdownProvider>
-    <MilkdownEditor />
+    <MilkdownEditor :content="content" @on-change="onContentChange"/>
   </MilkdownProvider>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script lang="ts" setup>
+import { ref } from 'vue'
 import { MilkdownProvider } from '@milkdown/vue'
 import MilkdownEditor from './MilkdownEditor.vue'
 
-export default defineComponent({
-  name: 'MilkdownEditorWrapper',
-  components: {
-    MilkdownProvider,
-    MilkdownEditor
-  },
-  setup: () => {}
-})
+const content = ref("")
+const onContentChange = (newContent: string) => {
+  content.value = newContent
+}
 </script>

@@ -13,6 +13,8 @@ export interface IDirectoryItem {
   origin: boolean
   isEditing: boolean
   isExpanded?: boolean
+  isSaved: boolean
+  isTemporary: boolean
   ext?: IExt
   icon?: string[]
   expIcon?: string[]
@@ -20,13 +22,14 @@ export interface IDirectoryItem {
 
 export type IFile = Omit<IDirectoryItem, 'children' | 'isExpanded'>
 
-export type IFolder = Omit<IDirectoryItem, 'pid' | 'ext'>
+export type IFolder = Omit<IDirectoryItem, 'pid' | 'ext' | 'isSaved'>
 
 export interface IDirectory {
   list: IDirectoryItem[] | undefined
-  selected: IFile | IFolder | undefined
+  isSaved: boolean
   selectedKey: string | undefined | number
   expandedKey: string[] | number[]
+  temporary?: IDirectoryItem | undefined
 }
 
 export enum ETypes {

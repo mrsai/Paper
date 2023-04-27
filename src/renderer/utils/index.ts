@@ -26,12 +26,16 @@ export default class Utils {
     return await window.mainApi.invoke('open-file-dialog')
   }
 
-  static async openFile(): Promise<string> {
-    return await window.mainApi.send(file.openFile)
+  static async selectSaveFolder(fileData: any): Promise<any> {
+    return await window.mainApi.invoke('open-save-file-dialog', JSON.stringify(fileData))
   }
 
-  static async saveFile(): Promise<any> {
-    return await window.mainApi.send(file.saveFile)
+  static async openLocalFile(fileData: any): Promise<string> {
+    return await window.mainApi.invoke('open-local-file', JSON.stringify(fileData))
+  }
+
+  static async saveLocalFile(fileData: any): Promise<any> {
+    return await window.mainApi.invoke('save-local-file', JSON.stringify(fileData))
   }
 
   static async getUnusedName(path: string, name: string, ext: string): Promise<string> {
@@ -81,5 +85,8 @@ export const {
   saveDirectory,
   readDirectory,
   getSettings,
-  saveSettings
+  saveSettings,
+  openLocalFile,
+  saveLocalFile,
+  selectSaveFolder
 } = Utils

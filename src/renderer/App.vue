@@ -1,11 +1,5 @@
-<script setup lang="tsx">
-import { DefaultLayout } from '@/renderer/components/layout'
-</script>
+<script setup lang="tsx"></script>
 
 <template>
-  <DefaultLayout>
-    <router-view></router-view>
-  </DefaultLayout>
+  <router-view></router-view>
 </template>
-
-<style></style>

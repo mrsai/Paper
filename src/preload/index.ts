@@ -5,9 +5,11 @@ import fse from 'fs-extra'
 const mainAvailChannels: string[] = [
   'msgRequestGetVersion',
   'msgOpenExternalLink',
+  'open-save-file-dialog',
   'create-local-folder',
   'create-local-file',
   'open-local-file',
+  'save-local-file',
   'open-file-dialog',
   'get-unused-name',
   'save-directory',

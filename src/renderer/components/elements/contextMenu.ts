@@ -70,6 +70,11 @@ export const sidebarContextmenu = (event: any, cb: any, type: any) => {
         onClick: cb.generateBlog
       },
       {
+        key: 'importMarkdown',
+        label: '导入',
+        onClick: cb.importMarkdown
+      },
+      {
         key: 'delete',
         label: h('div', { style: 'font-size:14px' }, [
           h('span', '删除'),

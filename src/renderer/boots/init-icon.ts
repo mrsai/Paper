@@ -9,8 +9,13 @@ import {
   faFolderOpen,
   faBars,
   faEllipsis,
+  faEllipsisVertical,
   faBarsStaggered,
-  faCircle
+  faCircle,
+  faUser,
+  faGear,
+  faCircleInfo,
+  faFileImport
 } from '@fortawesome/free-solid-svg-icons'
 import { faMarkdown } from '@fortawesome/free-brands-svg-icons'
 import { faFile } from '@fortawesome/free-regular-svg-icons'
@@ -23,8 +28,13 @@ library.add(
   faMarkdown,
   faFile,
   faEllipsis,
+  faEllipsisVertical,
   faBarsStaggered,
-  faCircle
+  faCircle,
+  faUser,
+  faGear,
+  faCircleInfo,
+  faFileImport
 )
 
 export const setupIcons = (app: App<Element>) => {

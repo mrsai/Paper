@@ -5,6 +5,7 @@ import { ETypes, EExt } from '@/renderer/types/sidebar'
 import { storeToRefs } from 'pinia'
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { sidebarContextmenu } from '@/renderer/components/elements/contextMenu'
+import { tipsToSave } from '@/renderer/utils/helper'
 import {
   createLocalFolder,
   selectFolder,
@@ -14,10 +15,12 @@ import {
   createLocalFile,
   pathJoin,
   saveDirectory,
-  readDirectory
+  readDirectory,
+  saveLocalFile,
+  selectSaveFolder
 } from '@/renderer/utils'
 import { ElMessage, ElMessageBox } from 'element-plus'
-const { list, selectedKey, expandedKey } = storeToRefs(useDirectoryStore())
+const { list, selectedKey, expandedKey, selectedFile } = storeToRefs(useDirectoryStore())
 const { create, update, del } = useDirectoryStore()
 const treeRef = ref<any>(null)
 const treeInput = ref<any>(null)
@@ -37,7 +40,8 @@ const handleContextMenu = (event: any, data: any, node: any) => {
           type: ETypes.File,
           ext: EExt.MarkDown,
           isEditing: true,
-          path
+          path,
+          isSaved: true
         }
         // 创建本地文件
         await createLocalFile(markdown)
@@ -63,7 +67,8 @@ const handleContextMenu = (event: any, data: any, node: any) => {
           type: ETypes.File,
           ext: EExt.RichText,
           isEditing: true,
-          path
+          path,
+          isSaved: true
         }
         await createLocalFile(richText)
         create(richText)
@@ -162,7 +167,39 @@ const handleRenameBlur = async (event: any, node: any, data: any) => {
 }
 
 const handleUserSelected = (data: any) => {
-  selectedKey.value = data.id
+  if (data.type === ETypes.Folder) {
+    return false
+  }
+  if (selectedFile.value && !selectedFile.value.isSaved) {
+    if (selectedFile.value.path) {
+      saveLocalFile(selectedFile.value).then(() => {
+        update({ ...selectedFile.value, isSaved: true })
+        selectedKey.value = data.id
+      })
+    } else {
+      // 弹出窗口提醒保存文件
+      // ElMessage.error('当前文件没有保存')
+      tipsToSave(
+        async () => {
+          // 保存
+          let res: string = await selectSaveFolder(selectedFile.value)
+          const len = selectedFile.value.name?.length + selectedFile.value.ext.length + 1
+          res = res.substring(0, res.length - len)
+          console.log(selectedFile.value)
+          saveLocalFile({ ...selectedFile.value, path: res }).then(() => {
+            update({ ...selectedFile.value, isSaved: true })
+            selectedKey.value = data.id
+          })
+        },
+        () => {
+          // 不保存
+          selectedKey.value = data.id
+        }
+      )
+    }
+  } else {
+    selectedKey.value = data.id
+  }
 }
 
 readDirectory().then((res) => {
@@ -175,7 +212,7 @@ readDirectory().then((res) => {
 </script>
 
 <template>
-  <div class="flex-col height-100p">
+  <div class="flex-col height-100p pt-5">
     <el-tree
       id="treeRef"
       ref="treeRef"
@@ -188,9 +225,9 @@ readDirectory().then((res) => {
         children: 'children',
         label: 'name'
       }"
-      :highlight-current="true"
+      :highlight-current="false"
       :expand-on-click-node="false"
-      :check-on-click-node="true"
+      :check-on-click-node="false"
       :default-expanded-keys="expandedKey"
       @node-contextmenu="handleContextMenu"
       @current-change="handleUserSelected"
@@ -217,12 +254,12 @@ readDirectory().then((res) => {
       class="custom-create"
       @contextmenu.prevent.stop="handleContextMenu($event, {}, null)"
     ></div>
+    <div class="user-settings flex-row justify-between ph-10">
+      <div><font-awesome-icon :icon="['fas', 'user']" /></div>
+    </div>
   </div>
 </template>
 <style>
-.el-tree__empty-block {
-  min-height: 0;
-}
 .menu-icon-fa {
   margin-right: 8px;
   text-align: left;
@@ -251,5 +288,9 @@ readDirectory().then((res) => {
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 9em;
+}
+.user-settings {
+  height: 30px;
+  color: var(--el-color-info);
 }
 </style>

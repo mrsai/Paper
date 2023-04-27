@@ -1,4 +1,4 @@
-import { generateId } from '@/renderer/utils/index'
+import { generateId } from '@/renderer/utils'
 import { defineStore } from 'pinia'
 import { IDirectory, ETypes, IDirectoryItem, EExt } from '../types/sidebar'
 
@@ -6,12 +6,28 @@ export const useDirectoryStore = defineStore('Directory', {
   state: () =>
     ({
       list: [],
-      selected: undefined,
+      isSaved: true,
       selectedKey: undefined,
-      expandedKey: []
+      expandedKey: [],
+      temporary: undefined
     } as IDirectory),
   getters: {
-    selectedFile: (state) => state.list?.find((it) => it.id === state.selectedKey)
+    selectedFile: (state) => {
+      if (state.temporary?.id === state.selectedKey) {
+        return state.temporary
+      }
+      const find = (list: any) => {
+        for (const item of list) {
+          if (item.id === state.selectedKey && item.type === ETypes.File) {
+            return item
+          }
+          if (item.children) {
+            return find(item.children)
+          }
+        }
+      }
+      return find(state.list)
+    }
   },
   actions: {
     create(data: any) {
@@ -24,10 +40,12 @@ export const useDirectoryStore = defineStore('Directory', {
         children: [],
         updateAt: Date.now().toString(),
         origin: false,
-        isEditing: false,
         ext: EExt.MarkDown,
         icon: ['fa-solid', 'fa-folder'],
-        expIcon: ['fa-solid', 'fa-folder-open']
+        expIcon: ['fa-solid', 'fa-folder-open'],
+        isEditing: false,
+        isSaved: true,
+        isTemporary: false
       } as IDirectoryItem
       Object.assign(item, data)
       // remove ext if type is folder
@@ -76,6 +94,25 @@ export const useDirectoryStore = defineStore('Directory', {
           this.list[i].children = this.list[i].children.filter((item) => item.id !== id)
         }
       }
+    },
+    createTemp(data: any) {
+      const item = {
+        pid: undefined,
+        id: generateId(),
+        name: 'New File',
+        path: '',
+        type: ETypes.File,
+        updateAt: Date.now().toString(),
+        ext: EExt.MarkDown,
+        isSaved: false,
+        content: '#Yep',
+        isEditing:false,
+        isTemporary: true,
+        origin: false
+      } as IDirectoryItem
+      Object.assign(item, data)
+      this.temporary = item
+      return this.temporary
     }
   }
 })

@@ -5,6 +5,8 @@ import Constants from './utils/Constants'
 
 /*
  * IPC Communications
+ * TODO：
+ * 需要重写成为 try catch 的形式来捕获处理所有的错误，return 给render 进程反馈给用户
  * */
 export default class IPCs {
   static initialize(window: BrowserWindow): void {
@@ -55,6 +57,55 @@ export default class IPCs {
         } catch (err) {
           console.error(`Failed to create file '${filePath}': ${err}`)
         }
+      }
+    })
+
+    ipcMain.handle('open-local-file', async (event, data) => {
+      let filePath = ''
+      try {
+        const { path, name, ext } = JSON.parse(data)
+        filePath = join(path, `${name}${ext}`)
+        const res = fse.pathExistsSync(filePath)
+        if (res) {
+          return fse.readFileSync(filePath).toString()
+        }
+      } catch (err) {
+        console.error(`Failed to create file '${filePath}': ${err}`)
+      }
+    })
+
+    ipcMain.handle('open-save-file-dialog', async (event, data) => {
+      const fileData = {
+        name: 'unnamed',
+        ext: '.md'
+      }
+      if (data) {
+        try {
+          const _data = JSON.parse(data)
+          Object.assign(fileData, _data)
+        } catch (error) {
+          console.log('error', error)
+        }
+      }
+      const result = await dialog.showSaveDialog(window, {
+        defaultPath: `${fileData.name}${fileData.ext}`,
+        title: 'Select the Folder to Save',
+        buttonLabel: 'Save'
+      })
+      return result.filePath
+    })
+
+    ipcMain.handle('save-local-file', async (event, data) => {
+      console.log(data)
+      let filePath = ''
+      try {
+        const { path, name, ext, content } = JSON.parse(data)
+        filePath = join(path, `${name}${ext}`)
+        // 确保同路径同名的文件如果存在，则要给出提示信息。
+        fse.ensureFileSync(filePath)
+        fse.writeFileSync(filePath, content)
+      } catch (err) {
+        console.error(`Failed to create file '${filePath}': ${err}`)
       }
     })
 
