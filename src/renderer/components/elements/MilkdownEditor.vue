@@ -10,14 +10,12 @@ import {
   withDefaults,
 } from 'vue'
 
-import { Editor, rootCtx } from '@milkdown/core'
+import { Editor, rootCtx,EditorStatus } from '@milkdown/core'
 import { nord } from '@milkdown/theme-nord'
 import { Milkdown, useEditor } from '@milkdown/vue'
 import { commonmark } from '@milkdown/preset-commonmark'
 import { replaceAll } from '@milkdown/utils'
 import { listener, listenerCtx } from '@milkdown/plugin-listener'
-import { useDebounceFn } from '@vueuse/core'
-
 
 const editor = ref(null as Editor | null)
 // 为了区分markdownUpdated这个监听函数中，编辑器是初始化的时候输出的内容，还是修改内容时候输出的内容，引入了这个参数
@@ -48,7 +46,12 @@ useEditor((root) => {
     })
     .use(listener)
     .use(commonmark)
-  editor.value = it
+
+  it.create().then(() => {
+    editor.value = it
+    emit('on-init')
+  });
+
   return it
 })
 
@@ -60,7 +63,4 @@ watch(
   },
 )
 
-onMounted(()=>{
-  emit('on-init')
-})
 </script>

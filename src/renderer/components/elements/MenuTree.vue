@@ -17,7 +17,8 @@ import {
   saveDirectory,
   readDirectory,
   saveLocalFile,
-  selectSaveFolder
+  selectSaveFolder,
+  openLocalFile,
 } from '@/renderer/utils'
 import { ElMessage, ElMessageBox } from 'element-plus'
 const { list, selectedKey, expandedKey, selectedFile } = storeToRefs(useDirectoryStore())
@@ -166,40 +167,53 @@ const handleRenameBlur = async (event: any, node: any, data: any) => {
   }
 }
 
+/**
+ * 打开一个文档
+ * @param data
+ */
+const handleOpenDoc = (data:any)=>{
+  if(!data.content && data.path){
+    openLocalFile(data).then((content) => {
+      update({ ...data, content })
+      selectedKey.value = data.id
+    })
+  }else{
+    selectedKey.value = data.id
+  }
+}
+
+const handleSaveDoc = async (next)=>{
+  let path = selectedFile.value.path;
+  if(!path){
+    path = await selectSaveFolder(selectedFile.value)
+    if(!path){
+      return false
+    }
+    update({ ...selectedFile.value, path })
+  }
+  saveLocalFile({ ...selectedFile.value, path }).then(() => {
+    update({ ...selectedFile.value, isSaved: true })
+    next?.()
+  })
+}
+
 const handleUserSelected = (data: any) => {
   if (data.type === ETypes.Folder) {
     return false
   }
-  if (selectedFile.value && !selectedFile.value.isSaved) {
-    if (selectedFile.value.path) {
-      saveLocalFile(selectedFile.value).then(() => {
-        update({ ...selectedFile.value, isSaved: true })
-        selectedKey.value = data.id
-      })
-    } else {
-      // 弹出窗口提醒保存文件
-      // ElMessage.error('当前文件没有保存')
+  if(selectedFile.value){
+    if(!selectedFile.value.path){
       tipsToSave(
-        async () => {
-          // 保存
-          let res: string = await selectSaveFolder(selectedFile.value)
-          const len = selectedFile.value.name?.length + selectedFile.value.ext.length + 1
-          res = res.substring(0, res.length - len)
-          console.log("save",selectedFile.value,res)
-          saveLocalFile({ ...selectedFile.value, path: res }).then(() => {
-            update({ ...selectedFile.value, isSaved: true })
-            selectedKey.value = data.id
-          })
-        },
-        () => {
-          // 不保存
-          console.log(selectedKey.value,data.id)
-          selectedKey.value = data.id
-        }
+        () => handleSaveDoc(()=>handleOpenDoc(data)),
+        () => handleOpenDoc(data)
       )
+    }else if(!selectedFile.value.isSaved){
+      handleSaveDoc(()=>handleOpenDoc(data));
+    }else{
+      handleOpenDoc(data)
     }
-  } else {
-    selectedKey.value = data.id
+  }else{
+    handleOpenDoc(data)
   }
 }
 
