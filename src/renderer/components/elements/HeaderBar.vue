@@ -6,6 +6,7 @@ import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
 import { openExternal } from '@/renderer/utils'
 import { useSettingStore } from '@/renderer/store/settings'
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 const { saveSetting } = useSettingStore()
 const languages = ref(['en'])
 const isDark = useDark()
@@ -97,6 +98,7 @@ onMounted((): void => {
             <!-- 如果已经保存，则直接保存，如果用户未保存，则提示用户是否进行保存，如果用户选择保存，则让用户选择保存目录 -->
             <el-dropdown-item command="settings" divided>设置</el-dropdown-item>
             <el-dropdown-item command="switchSidebar">侧边栏&emsp;&emsp;CTRL+K</el-dropdown-item>
+            <el-dropdown-item command="b">工具栏</el-dropdown-item>
             <el-dropdown-item command="b">默认模式</el-dropdown-item>
             <el-dropdown-item command="c">简洁模式</el-dropdown-item>
             <el-dropdown-item command="changeTheme">切换主题</el-dropdown-item>

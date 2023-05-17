@@ -49,7 +49,7 @@ const handleContextMenu = (event: any, data: any, node: any) => {
         create(markdown)
         // 展开菜单
         expandedKey.value = [data.id]
-        nextTick(() => {
+        await nextTick(() => {
           const t = setTimeout(() => {
             treeInput.value = treeRef.value?.el$?.querySelector('input')
             treeInput.value?.focus()
@@ -73,7 +73,7 @@ const handleContextMenu = (event: any, data: any, node: any) => {
         await createLocalFile(richText)
         create(richText)
         expandedKey.value = [data.id]
-        nextTick(() => {
+        await nextTick(() => {
           const t = setTimeout(() => {
             treeInput.value = treeRef.value?.el$?.querySelector('input')
             treeInput.value?.focus()
@@ -94,7 +94,7 @@ const handleContextMenu = (event: any, data: any, node: any) => {
           }
           await createLocalFolder(folder)
           create(folder)
-          nextTick(() => {
+          await nextTick(() => {
             treeInput.value = treeRef.value?.el$?.querySelector('input')
             treeInput.value?.focus()
             treeInput.value?.select()
@@ -162,7 +162,7 @@ const handleRenameBlur = async (event: any, node: any, data: any) => {
       treeInput.value?.focus()
       treeInput.value?.select()
     }
-    saveDirectory(list.value)
+    await saveDirectory(list.value)
   }
 }
 
@@ -185,7 +185,7 @@ const handleUserSelected = (data: any) => {
           let res: string = await selectSaveFolder(selectedFile.value)
           const len = selectedFile.value.name?.length + selectedFile.value.ext.length + 1
           res = res.substring(0, res.length - len)
-          console.log(selectedFile.value)
+          console.log("save",selectedFile.value,res)
           saveLocalFile({ ...selectedFile.value, path: res }).then(() => {
             update({ ...selectedFile.value, isSaved: true })
             selectedKey.value = data.id
@@ -193,6 +193,7 @@ const handleUserSelected = (data: any) => {
         },
         () => {
           // 不保存
+          console.log(selectedKey.value,data.id)
           selectedKey.value = data.id
         }
       )

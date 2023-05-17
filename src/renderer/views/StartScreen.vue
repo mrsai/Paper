@@ -2,12 +2,13 @@
 import { storeToRefs } from 'pinia'
 import { useDirectoryStore } from '@/renderer/store/directory'
 
-const { selectedKey } = storeToRefs(useDirectoryStore())
+const { selectedKey, selectedFile } = storeToRefs(useDirectoryStore())
 const { createTemp } = useDirectoryStore()
 
 const handleCreateFile = () => {
   const temp = createTemp({
-    name: 'untitled'
+    name: 'untitled',
+    content: '# untitled',
   })
   selectedKey.value = temp.id
 }
@@ -15,7 +16,7 @@ const handleOpenFile = () => {}
 </script>
 <template>
   <div class="start-screen">
-    <div class="logo">PAPER<font color="blue">.</font></div>
+    <div class="logo">PAPER<span class="blue">.</span></div>
     <div class="flex-row justify-between button-groups">
       <div class="items-full start-items" @click="handleCreateFile">新建文件</div>
       <div class="items-full start-items" @click="handleOpenFile">打开文件</div>
@@ -33,6 +34,9 @@ const handleOpenFile = () => {}
 .start-screen {
   position: relative;
   height: 100%;
+}
+.blue{
+  color: #1890ff;
 }
 .logo {
   position: absolute;
