@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { nextTick, ref } from 'vue'
+import { nextTick, ref,onMounted } from 'vue'
 import { useDirectoryStore } from '@/renderer/store/directory'
 import { ETypes, EExt } from '@/renderer/types/sidebar'
 import { storeToRefs } from 'pinia'
 import ContextMenu from '@imengyu/vue3-context-menu'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { sidebarContextmenu } from '@/renderer/components/elements/contextMenu'
 import { tipsToSave } from '@/renderer/utils/helper'
 import {
@@ -14,13 +15,14 @@ import {
   renameFile,
   createLocalFile,
   pathJoin,
+  pathParse,
   saveDirectory,
   readDirectory,
   saveLocalFile,
   selectSaveFolder,
-  openLocalFile,
+  openLocalFile
 } from '@/renderer/utils'
-import { ElMessage, ElMessageBox } from 'element-plus'
+
 const { list, selectedKey, expandedKey, selectedFile } = storeToRefs(useDirectoryStore())
 const { create, update, del } = useDirectoryStore()
 const treeRef = ref<any>(null)
@@ -167,32 +169,32 @@ const handleRenameBlur = async (event: any, node: any, data: any) => {
   }
 }
 
-/**
- * 打开一个文档
- * @param data
- */
-const handleOpenDoc = (data:any)=>{
-  if(!data.content && data.path){
+const handleOpenDoc = (data: any) => {
+  if (!data.content && data.path) {
     openLocalFile(data).then((content) => {
       update({ ...data, content })
       selectedKey.value = data.id
     })
-  }else{
+  } else {
     selectedKey.value = data.id
   }
 }
 
-const handleSaveDoc = async (next)=>{
-  let path = selectedFile.value.path;
-  if(!path){
+const handleSaveDoc = async (next?) => {
+  let path = selectedFile.value.path
+  const saveData = {...selectedFile.value}
+  if (!path) {
     path = await selectSaveFolder(selectedFile.value)
-    if(!path){
+    if (!path) {
       return false
     }
-    update({ ...selectedFile.value, path })
+    // 保存文件路径
+    const { dir, name } = await pathParse(path)
+    Object.assign(saveData, { path: dir, name })
+    update(saveData)
   }
-  saveLocalFile({ ...selectedFile.value, path }).then(() => {
-    update({ ...selectedFile.value, isSaved: true })
+  saveLocalFile(saveData).then(() => {
+    update({ ...saveData, isSaved: true })
     next?.()
   })
 }
@@ -201,28 +203,34 @@ const handleUserSelected = (data: any) => {
   if (data.type === ETypes.Folder) {
     return false
   }
-  if(selectedFile.value){
-    if(!selectedFile.value.path){
+  if (selectedFile.value) {
+    if (!selectedFile.value.path) {
       tipsToSave(
-        () => handleSaveDoc(()=>handleOpenDoc(data)),
+        () => handleSaveDoc(() => handleOpenDoc(data)),
         () => handleOpenDoc(data)
       )
-    }else if(!selectedFile.value.isSaved){
-      handleSaveDoc(()=>handleOpenDoc(data));
-    }else{
+    } else if (!selectedFile.value.isSaved) {
+      handleSaveDoc(() => handleOpenDoc(data))
+    } else {
       handleOpenDoc(data)
     }
-  }else{
+  } else {
     handleOpenDoc(data)
   }
 }
 
 readDirectory().then((res) => {
   try {
-    list.value = JSON.parse(res)
+    list.value = res
   } catch (error) {
     console.log(error)
   }
+})
+
+onMounted((): void => {
+  window.mainApi.receive("save-current-file",(event,data)=>{
+    handleSaveDoc()
+  })
 })
 </script>
 

@@ -6,7 +6,9 @@ import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
 import { openExternal } from '@/renderer/utils'
 import { useSettingStore } from '@/renderer/store/settings'
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import {useDirectoryStore} from "@/renderer/store/directory";
+
 const { saveSetting } = useSettingStore()
 const languages = ref(['en'])
 const isDark = useDark()
@@ -14,6 +16,8 @@ const router = useRouter()
 const toggleDark = useToggle(isDark)
 const { locale, availableLocales, t } = useI18n()
 const { settings } = storeToRefs(useSettingStore())
+const { selectedFile } = storeToRefs(useDirectoryStore())
+
 
 const command = Object.create(null)
 command.changeTheme = () => {
@@ -45,28 +49,28 @@ onMounted((): void => {
 })
 </script>
 <template>
-  <header class="top-bar flex-row items-center justify-between">
+  <header class="top-bar flex-row items-center justify-between" :style="{'background': selectedFile && !selectedFile.isSaved ? 'rgba(255,0,0,0.1)':''}">
     <div class="bar-left"> </div>
-    <div class="bar-cneter">
-      <!-- <input type="text" value="万家灯火" class="topbar-title" /> -->
+    <div class="bar-center">
     </div>
     <div class="bar-right">
-      <el-dropdown trigger="click" :teleported="true" @command="handleCommand">
+      <el-dropdown v-if="selectedFile" trigger="click" :teleported="true" @command="handleCommand">
         <span class="el-dropdown-link pointer">
           <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" />
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item command="a">生成链接</el-dropdown-item>
-            <el-dropdown-item command="b">生成图片</el-dropdown-item>
-            <el-dropdown-item command="d">生成PDF</el-dropdown-item>
-            <el-dropdown-item command="c">翻译</el-dropdown-item>
-            <el-dropdown-item command="c">对话</el-dropdown-item>
+            <el-dropdown-item command="editorTool">{{ $t('article.editor-helper') }}</el-dropdown-item>
+            <el-dropdown-item command="a">{{ $t('article.generate-link') }}</el-dropdown-item>
+            <el-dropdown-item command="b">{{ $t('article.generate-picture') }}</el-dropdown-item>
+            <el-dropdown-item command="d">{{ $t('article.generate-pdf') }}</el-dropdown-item>
+            <el-dropdown-item command="c">{{ $t('article.translate') }}</el-dropdown-item>
+            <el-dropdown-item command="c">{{ $t('article.chat') }}</el-dropdown-item>
             <el-dropdown-item command="e" divided>
               <font-awesome-icon :icon="['fas', 'circle']" class="copy-size" />
-              <span>自动粘贴</span>
+              <span>{{ $t('article.auto-paste') }}</span>
             </el-dropdown-item>
-            <el-dropdown-item command="c" divided disabled>历史</el-dropdown-item>
+            <el-dropdown-item command="c" divided disabled>{{ $t('article.history') }}</el-dropdown-item>
             <el-dropdown-item command="d">2022年9月14 16:32:00</el-dropdown-item>
             <el-dropdown-item command="d">2022年9月14 16:31:00</el-dropdown-item>
             <el-dropdown-item command="d">2022年9月14 16:11:00</el-dropdown-item>
@@ -79,37 +83,23 @@ onMounted((): void => {
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item command="settings">
-              新建
-              <!-- &nbsp;
-              <el-popover
-                placement="left-start"
-                title="提示"
-                :width="260"
-                trigger="hover"
-                content="只创建本地 Markdown 文件，且不会进行目录管理。"
-              >
-                <template #reference>
-                  <font-awesome-icon :icon="['fas', 'circle-info']" />
-                </template>
-              </el-popover> -->
+            <el-dropdown-item command="create">
+              {{ $t('app.create-markdown') }}
             </el-dropdown-item>
-            <el-dropdown-item command="settings">打开</el-dropdown-item>
+            <el-dropdown-item command="open">{{ $t('app.open-markdown') }}</el-dropdown-item>
             <!-- 如果已经保存，则直接保存，如果用户未保存，则提示用户是否进行保存，如果用户选择保存，则让用户选择保存目录 -->
-            <el-dropdown-item command="settings" divided>设置</el-dropdown-item>
-            <el-dropdown-item command="switchSidebar">侧边栏&emsp;&emsp;CTRL+K</el-dropdown-item>
-            <el-dropdown-item command="b">工具栏</el-dropdown-item>
-            <el-dropdown-item command="b">默认模式</el-dropdown-item>
-            <el-dropdown-item command="c">简洁模式</el-dropdown-item>
-            <el-dropdown-item command="changeTheme">切换主题</el-dropdown-item>
-            <el-dropdown-item command="changeTheme">白色主题</el-dropdown-item>
-            <el-dropdown-item command="e" disabled>图床服务</el-dropdown-item>
-            <el-dropdown-item command="changeLang">切换语言</el-dropdown-item>
-            <el-dropdown-item command="e" disabled divided>消息</el-dropdown-item>
-            <el-dropdown-item command="e">退出</el-dropdown-item>
-            <el-dropdown-item command="e">帮助</el-dropdown-item>
-            <el-dropdown-item command="online">访问在线</el-dropdown-item>
-            <el-dropdown-item command="e" divided>关于</el-dropdown-item>
+            <el-dropdown-item command="settings" divided>{{ $t('app.settings') }}</el-dropdown-item>
+            <el-dropdown-item command="switchSidebar">{{ $t('app.sidebar') }}&emsp;&emsp;CTRL+K</el-dropdown-item>
+            <el-dropdown-item command="defaultMode">{{ $t('app.default-mode') }}</el-dropdown-item>
+            <el-dropdown-item command="simpleMode">{{ $t('app.zen-mode') }}</el-dropdown-item>
+            <el-dropdown-item command="changeTheme">{{ $t('app.dark-mode') }}</el-dropdown-item>
+            <el-dropdown-item command="changeTheme">{{ $t('app.light-mode') }}</el-dropdown-item>
+            <el-dropdown-item command="changeLang">{{ $t('app.change-language') }}</el-dropdown-item>
+            <el-dropdown-item command="message" disabled divided>{{ $t('app.message') }}</el-dropdown-item>
+            <el-dropdown-item command="picService" disabled>{{ $t('app.picture-services') }}</el-dropdown-item>
+            <el-dropdown-item command="help">{{ $t('app.help') }}</el-dropdown-item>
+            <el-dropdown-item command="online">{{ $t('app.online') }}</el-dropdown-item>
+            <el-dropdown-item command="about" divided>{{ $t('app.about') }}</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -128,7 +118,7 @@ onMounted((): void => {
   width: 126px;
   height: 100%;
 }
-.bar-cneter {
+.bar-center {
   flex: 1;
   display: flex;
   align-items: center;
@@ -138,13 +128,6 @@ onMounted((): void => {
   width: 120px;
   text-align: right;
   padding-right: 10px;
-}
-.topbar-title {
-  outline: none;
-  border: 0;
-  line-height: 36px;
-  padding: 0 2px;
-  background-color: transparent;
 }
 .copy-size {
   font-size: 8px;

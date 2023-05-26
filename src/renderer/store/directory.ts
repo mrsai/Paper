@@ -70,6 +70,10 @@ export const useDirectoryStore = defineStore('Directory', {
       }
     },
     update(data: any) {
+      if(this.temporary && data.isTemporary){
+        Object.assign(this.temporary, data)
+        return
+      }
       // 使用广度优先算法查找子节点
       const queue: any = [...this.list!]
       while (queue.length) {
@@ -106,13 +110,16 @@ export const useDirectoryStore = defineStore('Directory', {
         ext: EExt.MarkDown,
         isSaved: false,
         content: '#Yep',
-        isEditing:false,
+        isEditing: false,
         isTemporary: true,
         origin: false
       } as IDirectoryItem
       Object.assign(item, data)
       this.temporary = item
       return this.temporary
-    }
+    },
+    updateTemporary(data: any) {
+      this.temporary = { ...this.temporary,...data }
+    },
   }
 })

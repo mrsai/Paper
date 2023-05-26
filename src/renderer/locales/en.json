@@ -15,5 +15,56 @@
     "increase-count": "Count 1 increment",
     "documentation": "Documentation",
     "github": "Source Code"
+  },
+  "page": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "blog": "Blog",
+    "login": "Login",
+    "register": "Register",
+    "profile": "Profile",
+    "settings": "Settings",
+    "dashboard": "Dashboard",
+    "admin": "Admin",
+    "not-found": "Not Found"
+  },
+  "contextMenu": {
+    "create-markdown": "Create Markdown File",
+    "create-rich-text": "Create Rich Text File",
+    "create-folder": "Create Folder",
+    "import-file": "Import File",
+    "rename": "Rename File",
+    "sync": "Sync Files",
+    "translate": "Translate",
+    "delete": "Delete",
+    "blog": "Blog"
+  },
+  "article": {
+    "generate-link": "Generate Link",
+    "generate-picture": "Generate Picture",
+    "generate-pdf": "Generate PDF",
+    "translate": "Translate",
+    "chat": "Chat",
+    "auto-paste": "Auto Paste",
+    "history": "History"
+  },
+  "app": {
+    "create-markdown": "Create Markdown File",
+    "open-markdown": "Open Markdown File",
+    "settings": "Settings",
+    "sidebar": "Sidebar",
+    "editor-helper": "Editor Helper",
+    "default-mode": "Default Mode",
+    "zen-mode": "Zen Mode",
+    "dark-mode": "Dark Mode",
+    "light-mode": "Light Mode",
+    "change-language": "Change Language",
+    "message": "Message",
+    "help": "Help",
+    "picture-services": "Picture Services",
+    "documentation": "Documentation",
+    "online": "Source Code",
+    "about": "About"
   }
 }

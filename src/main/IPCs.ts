@@ -1,5 +1,5 @@
 import fse from 'fs-extra'
-import { join } from 'path'
+import { join, parse } from 'path'
 import { BrowserWindow, ipcMain, shell, dialog, app } from 'electron'
 import Constants from './utils/Constants'
 
@@ -20,10 +20,11 @@ export default class IPCs {
       await shell.openExternal(url)
     })
 
-    ipcMain.handle('open-file-dialog', async (event) => {
+    ipcMain.handle('open-file-dialog', async (event,options:any = {}) => {
       const result = await dialog.showOpenDialog(window, {
         title: 'Select the Folder to Save',
-        properties: ['openDirectory']
+        properties: ['openDirectory'],
+        ...options
       })
       return result.filePaths[0]
     })
@@ -165,13 +166,30 @@ export default class IPCs {
       return join(...paths)
     })
 
+    ipcMain.handle('path-parse', async (event, path) => {
+      return parse(path)
+    })
+
     ipcMain.on('save-directory', async (event, data) => {
       const filePath = join(app.getPath('appData'), app.name, 'directoryDB.json')
       try {
+        const saveData = JSON.parse(data)
+        saveData.forEach((item: any) => {
+          if(item.content){
+            item.content = ""
+          }
+          if(item.children){
+            item.children.forEach((child: any) => {
+              if(child.content){
+                child.content = ""
+              }
+            })
+          }
+        })
         // 确保文件存在
         fse.ensureFileSync(filePath)
         // 写入文件内容
-        fse.writeJsonSync(filePath, data, { spaces: 2 })
+        fse.writeJsonSync(filePath, saveData, { spaces: 2 })
         console.log(`JSON data written to file ${filePath}`)
       } catch (err) {
         console.error(`Error writing file ${filePath}: ${err}`)
@@ -200,8 +218,7 @@ export default class IPCs {
 
       try {
         // 尝试读取文件内容
-        const data = await fse.readJson(filePath)
-        return data
+        return await fse.readJson(filePath)
       } catch (err: any) {
         if (err.code === 'ENOENT') {
           // 如果文件不存在，则创建文件并写入初始化数据
@@ -238,6 +255,10 @@ export default class IPCs {
         console.error(`Error writing file ${filePath}: ${err}`)
         throw err
       }
+    })
+
+    ipcMain.on('quit', () => {
+      app.quit()
     })
   }
 }

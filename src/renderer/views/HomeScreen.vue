@@ -11,7 +11,7 @@ const { settings } = storeToRefs(useSettingStore())
 const { create } = useDirectoryStore()
 const { list, selectedFile, temporary } = storeToRefs(useDirectoryStore())
 
-const currentTab:any = computed(() => {
+const currentTab: any = computed(() => {
   // 如果有临时打开的文件或者有选中的目录
   return selectedFile.value?.id || temporary?.value ? MDEditor : StartScreen
 })

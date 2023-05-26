@@ -1,20 +1,23 @@
 <template>
   <MilkdownProvider>
-    <MilkdownEditor :content="content" @on-change="onContentChange" @on-init="onEditorInit"/>
+    <ProsemirrorAdapterProvider>
+      <MilkdownEditor :content="content" @on-change="onContentChange" @on-init="onEditorInit" />
+    </ProsemirrorAdapterProvider>
   </MilkdownProvider>
 </template>
 
 <script lang="ts" setup>
-import {ref, watch} from 'vue'
+import { ref, watch } from 'vue'
+import { ProsemirrorAdapterProvider } from '@prosemirror-adapter/vue';
 import { MilkdownProvider } from '@milkdown/vue'
 import MilkdownEditor from './MilkdownEditor.vue'
-import {useDirectoryStore} from "@/renderer/store/directory";
-import {openLocalFile} from "@/renderer/utils";
-import {storeToRefs} from "pinia";
+import { useDirectoryStore } from '@/renderer/store/directory'
+import { openLocalFile } from '@/renderer/utils'
+import { storeToRefs } from 'pinia'
 const { update } = useDirectoryStore()
 const { selectedFile } = storeToRefs(useDirectoryStore())
 
-const content = ref("")
+const content = ref('')
 const onContentChange = (newContent: string) => {
   update({ ...selectedFile.value, content: newContent, isSaved: false })
 }
@@ -26,7 +29,7 @@ const onEditorInit = (editor: any) => {
 watch(
   () => selectedFile.value,
   (newVal) => {
-    if (newVal){
+    if (newVal) {
       console.log(newVal)
       content.value = newVal.content
       // if(!newVal.content && newVal.path){

@@ -68,30 +68,29 @@ text {
   flex-grow: 1;
   flex-shrink: 1;
 }
-.relative{
+.relative {
   position: relative;
 }
 .height-100vh {
   height: 100vh;
 }
-.height-100p{
+.height-100p {
   height: 100%;
 }
-.flex-fourth-grow > div:nth-child(4){
+.flex-fourth-grow > div:nth-child(4) {
   flex-grow: 1;
   flex-shrink: 1;
 }
 
-
 // 生成的一些原子样式
 @each $i in 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1 {
-  [bga#{$i * 10}] { 
+  [bga#{$i * 10}] {
     background-color: rgba(0, 0, 0, $i);
   }
 }
 
 @for $i from 3 through 12 {
-  [radius-#{$i}] { 
+  [radius-#{$i}] {
     border-radius: #{$i}px;
     overflow: hidden;
   }
@@ -101,45 +100,29 @@ text {
   border-radius: 100rem;
 }
 
-
 @for $i from 12 through 30 {
-  [fz-#{$i * 2}] { 
+  [fz-#{$i * 2}] {
     font-size: #{$i * 2}px;
   }
 }
 
-$direction: (
-  l left,
-  r right,
-  t top,
-  b bottom
-);
+$direction: (l left, r right, t top, b bottom);
 
 @for $i from 1 through 30 {
-
-  @each $type in m,
-  p,
-  v,
-  h,
-  a {
-
+  @each $type in m, p, v, h, a {
     @if $type ==m {
       @each $d in $direction {
         .m#{nth($d, 1)}-#{$i} {
           margin-#{nth($d, 2)}: #{$i}px;
         }
       }
-    }
-
-    @else if $type ==p {
+    } @else if $type ==p {
       @each $d in $direction {
         .p#{nth($d, 1)}-#{$i} {
           padding-#{nth($d, 2)}: #{$i}px;
         }
       }
-    }
-
-    @else if $type ==h {
+    } @else if $type ==h {
       .ph-#{$i} {
         padding-left: #{$i}px;
         padding-right: #{$i}px;
@@ -149,16 +132,12 @@ $direction: (
         margin-left: #{$i}px;
         margin-right: #{$i}px;
       }
-    }
-
-    @else if $type ==v {
+    } @else if $type ==v {
       .pv-#{$i} {
         padding-top: #{$i}px;
         padding-bottom: #{$i}px;
       }
-    }
-
-    @else {
+    } @else {
       .pa-#{$i} {
         padding: #{$i}px;
       }

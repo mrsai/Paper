@@ -13,7 +13,7 @@ declare global {
   }
 }
 
-const run = async () => {
+const run = () => {
   const app = createApp(App)
 
   setupStore(app)

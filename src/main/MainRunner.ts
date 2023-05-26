@@ -1,6 +1,7 @@
 import { app, BrowserWindow, RenderProcessGoneDetails } from 'electron'
 import Constants from './utils/Constants'
 import IPCs from './IPCs'
+import {registerShortcuts} from "./shortcut";
 
 const exitApp = (mainWindow: BrowserWindow): void => {
   if (mainWindow && !mainWindow.isDestroyed()) {
@@ -52,6 +53,7 @@ export const createMainWindow = async (mainWindow: BrowserWindow): Promise<Brows
   // Initialize IPC Communication
   IPCs.initialize(mainWindow)
 
+  registerShortcuts(mainWindow)
   return mainWindow
 }
 

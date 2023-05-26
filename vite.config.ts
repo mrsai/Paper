@@ -72,11 +72,11 @@ export default defineConfig(() => {
       ]),
       rendererPlugin(),
       AutoImport({
-        resolvers: [ElementPlusResolver()],
+        resolvers: [ElementPlusResolver()]
       }),
       Components({
-        resolvers: [ElementPlusResolver()],
-      }),
+        resolvers: [ElementPlusResolver()]
+      })
     ]
   }
 })

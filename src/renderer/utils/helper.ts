@@ -17,7 +17,7 @@ export function tipsToSave(confirm: any, cancel: any) {
   })
     .then(confirm)
     .catch((action) => {
-      if(action === 'cancel') {
+      if (action === 'cancel') {
         cancel()
       }
     })

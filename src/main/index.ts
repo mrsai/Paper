@@ -2,13 +2,13 @@ import { app, WebContents, RenderProcessGoneDetails } from 'electron'
 import Constants from './utils/Constants'
 import { createErrorWindow, createMainWindow } from './MainRunner'
 import { macOSDisableDefaultMenuItem } from './utils/Menus'
+import { unRegisterShortcuts } from './shortcut'
 
 let mainWindow
 let errorWindow
 
 app.on('ready', () => {
   macOSDisableDefaultMenuItem()
-
   mainWindow = createMainWindow(mainWindow)
 })
 
@@ -25,6 +25,10 @@ app.on('window-all-closed', () => {
   if (!Constants.IS_MAC) {
     app.quit()
   }
+})
+
+app.on('will-quit', () => {
+  unRegisterShortcuts(mainWindow)
 })
 
 app.on(

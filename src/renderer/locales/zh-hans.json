@@ -1,19 +1,69 @@
 {
   "desc": {
-    "welcome-title": "你好武特龙！ 一切都准备好了。",
-    "welcome-desc": "您现在可以编写跨平台的 Web 应用程序。 实时查看更改并使用一个命令构建到多个平台。 如果您还不熟悉它，可以从下面的文档页面获得帮助，或者运行一些预先编写的示例代码。",
-    "second-desc": "您已移至第二个屏幕！ 这里什么都没有！"
+    "welcome-title": "Hello Vutron! Everything is ready.",
+    "welcome-desc": "You can now write cross-platform web applications. See changes in real time and build to multiple platforms with one command. If you're not already familiar with it, you can get help from the documentation page below, or run some pre-written example code.",
+    "second-desc": "You have moved to the second screen! There is nothing here!"
   },
   "title": {
-    "main": "主屏幕",
-    "second": "第二屏",
-    "error": "未知错误"
+    "main": "Main Screen",
+    "second": "Second Screen",
+    "error": "Unknown Error"
   },
   "menu": {
-    "change-theme": "改变主题",
-    "change-language": "改变语言",
-    "increase-count": "计数 1 个增量",
-    "documentation": "文档",
-    "github": "源代码"
+    "change-theme": "Change Theme",
+    "change-language": "Change Language",
+    "increase-count": "Count 1 increment",
+    "documentation": "Documentation",
+    "github": "Source Code"
+  },
+  "page": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "blog": "Blog",
+    "login": "Login",
+    "register": "Register",
+    "profile": "Profile",
+    "settings": "Settings",
+    "dashboard": "Dashboard",
+    "admin": "Admin",
+    "not-found": "Not Found"
+  },
+  "contextMenu": {
+    "create-markdown": "Create Markdown File",
+    "create-rich-text": "Create Rich Text File",
+    "create-folder": "Create Folder",
+    "import-file": "Import File",
+    "rename": "Rename File",
+    "sync": "Sync Files",
+    "translate": "Translate",
+    "delete": "Delete",
+    "blog": "Blog"
+  },
+  "article": {
+    "editor-helper": "工具栏",
+    "generate-link": "生成链接",
+    "generate-picture": "生成图片",
+    "generate-pdf": "生成PDF",
+    "translate": "翻译",
+    "chat": "对话",
+    "auto-paste": "自动粘贴",
+    "history": "历史"
+  },
+  "app": {
+    "create-markdown": "新建",
+    "open-markdown": "打开",
+    "settings": "设置",
+    "sidebar": "侧边栏",
+    "default-mode": "默认模式",
+    "zen-mode": "简洁模式",
+    "dark-mode": "暗色主题",
+    "light-mode": "亮色主题",
+    "change-language": "切换语言",
+    "message": "消息",
+    "help": "帮助",
+    "picture-services": "图床服务",
+    "online": "访问在线",
+    "about": "关于"
   }
 }
