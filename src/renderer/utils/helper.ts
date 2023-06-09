@@ -22,3 +22,7 @@ export function tipsToSave(confirm: any, cancel: any) {
       }
     })
 }
+
+export function clone(data: any) {
+  return JSON.parse(JSON.stringify(data))
+}

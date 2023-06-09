@@ -18,6 +18,6 @@ export default createI18n({
   globalInjection: true,
   messages: {
     en,
-    zhHans,
+    zhHans
   }
 })

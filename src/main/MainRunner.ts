@@ -1,7 +1,7 @@
 import { app, BrowserWindow, RenderProcessGoneDetails } from 'electron'
 import Constants from './utils/Constants'
 import IPCs from './IPCs'
-import {registerShortcuts} from "./shortcut";
+import { registerShortcuts, unRegisterShortcuts } from './shortcut'
 
 const exitApp = (mainWindow: BrowserWindow): void => {
   if (mainWindow && !mainWindow.isDestroyed()) {
@@ -44,16 +44,23 @@ export const createMainWindow = async (mainWindow: BrowserWindow): Promise<Brows
     mainWindow.setAlwaysOnTop(false)
   })
 
+  mainWindow.on('focus', (): void => {
+    mainWindow.show()
+    registerShortcuts(mainWindow)
+  })
+
+  mainWindow.on('blur', (): void => {
+    unRegisterShortcuts(mainWindow)
+  })
+
   if (Constants.IS_DEV_ENV) {
     await mainWindow.loadURL(Constants.APP_INDEX_URL_DEV)
   } else {
     await mainWindow.loadFile(Constants.APP_INDEX_URL_PROD)
   }
-
   // Initialize IPC Communication
   IPCs.initialize(mainWindow)
 
-  registerShortcuts(mainWindow)
   return mainWindow
 }
 

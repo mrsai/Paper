@@ -1,4 +1,10 @@
-import { generateId } from '@/renderer/utils'
+import {
+  generateId,
+  openLocalFile,
+  pathParse,
+  selectSaveFolder,
+  saveLocalFile
+} from '@/renderer/utils'
 import { defineStore } from 'pinia'
 import { IDirectory, ETypes, IDirectoryItem, EExt } from '../types/sidebar'
 
@@ -70,7 +76,7 @@ export const useDirectoryStore = defineStore('Directory', {
       }
     },
     update(data: any) {
-      if(this.temporary && data.isTemporary){
+      if (this.temporary && data.isTemporary) {
         Object.assign(this.temporary, data)
         return
       }
@@ -119,7 +125,57 @@ export const useDirectoryStore = defineStore('Directory', {
       return this.temporary
     },
     updateTemporary(data: any) {
-      this.temporary = { ...this.temporary,...data }
+      this.temporary = { ...this.temporary, ...data }
     },
+    updateList(data: any) {
+      this.list = data
+    },
+    async handleOpenDoc(data: any) {
+      if (!data.content && data.path) {
+        openLocalFile(data).then((content) => {
+          this.update({ ...data, content })
+          this.selectedKey = data.id
+        })
+      } else {
+        this.selectedKey = data.id
+      }
+    },
+    async handleSaveDoc(next?: Function) {
+      if (this.selectedFile && this.selectedFile.id && !this.selectedFile.isSaved) {
+        let path = this.selectedFile.path
+        const saveData = { ...this.selectedFile }
+        if (!path) {
+          path = await selectSaveFolder(this.selectedFile)
+          if (!path) {
+            // 取消保存，直接执行下一步的函数
+            next?.()
+            return false
+          }
+          const { dir, name } = await pathParse(path)
+          Object.assign(saveData, { path: dir, name })
+          this.update(saveData)
+        }
+        saveLocalFile(saveData).then(() => {
+          this.update({ ...saveData, isSaved: true })
+          next?.()
+        })
+      } else {
+        next?.()
+      }
+    },
+    async handleCreateTemp() {
+      const temp = this.createTemp({
+        name: 'untitled',
+        content: '# untitled\n ... '
+      })
+      this.selectedKey = temp.id
+    },
+    async openFileByPath(path: string) {
+      const { dir, name, ext } = await pathParse(path)
+      const createData = { name, ext, path: dir }
+      const content = await openLocalFile(createData)
+      const temp = this.createTemp({ ...createData, content })
+      this.selectedKey = temp.id
+    }
   }
 })

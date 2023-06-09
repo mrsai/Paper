@@ -30,15 +30,15 @@
     "not-found": "Not Found"
   },
   "contextMenu": {
-    "create-markdown": "Create Markdown File",
-    "create-rich-text": "Create Rich Text File",
-    "create-folder": "Create Folder",
-    "import-file": "Import File",
-    "rename": "Rename File",
-    "sync": "Sync Files",
-    "translate": "Translate",
-    "delete": "Delete",
-    "blog": "Blog"
+    "create-markdown": "新建 MarkDown",
+    "create-rich-text": "新建 RichText",
+    "create-folder": "新建文件夹",
+    "import-file": "导入文件",
+    "rename": "重命名",
+    "sync": "同步",
+    "translate": "翻译",
+    "delete": "删除",
+    "blog": "发布博文"
   },
   "article": {
     "editor-helper": "工具栏",
@@ -51,19 +51,37 @@
     "history": "历史"
   },
   "app": {
-    "create-markdown": "新建",
-    "open-markdown": "打开",
+    "create-markdown": "新建文件",
+    "open-markdown": "打开文件",
     "settings": "设置",
-    "sidebar": "侧边栏",
+    "sidebar": "切换侧边栏",
     "default-mode": "默认模式",
     "zen-mode": "简洁模式",
     "dark-mode": "暗色主题",
     "light-mode": "亮色主题",
-    "change-language": "切换语言",
+    "change-language": "切换语言（中/英）",
     "message": "消息",
     "help": "帮助",
     "picture-services": "图床服务",
     "online": "访问在线",
     "about": "关于"
+  },
+  "setting": {
+    "title": "设置",
+    "theme": "主题",
+    "light": "亮色主题",
+    "dark": "暗色主题",
+    "custom": "自定主题",
+    "appbar-color": "APP颜色",
+    "background-color": "背景颜色",
+    "background-image": "背景图片",
+    "font-family": "字体",
+    "font-size": "字体大小",
+    "font-color": "字体颜色",
+    "line-height": "行间距",
+    "save-setting": "保存设置",
+    "reset-setting": "恢复默认",
+    "font-song": "宋体",
+    "font-system": "系统默认"
   }
 }

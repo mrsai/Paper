@@ -1,6 +1,6 @@
 import fse from 'fs-extra'
 import { join, parse } from 'path'
-import { BrowserWindow, ipcMain, shell, dialog, app } from 'electron'
+import { BrowserWindow, ipcMain, shell, dialog, app, clipboard } from 'electron'
 import Constants from './utils/Constants'
 
 /*
@@ -20,7 +20,7 @@ export default class IPCs {
       await shell.openExternal(url)
     })
 
-    ipcMain.handle('open-file-dialog', async (event,options:any = {}) => {
+    ipcMain.handle('open-file-dialog', async (event, options: any = {}) => {
       const result = await dialog.showOpenDialog(window, {
         title: 'Select the Folder to Save',
         properties: ['openDirectory'],
@@ -175,13 +175,13 @@ export default class IPCs {
       try {
         const saveData = JSON.parse(data)
         saveData.forEach((item: any) => {
-          if(item.content){
-            item.content = ""
+          if (item.content) {
+            item.content = ''
           }
-          if(item.children){
+          if (item.children) {
             item.children.forEach((child: any) => {
-              if(child.content){
-                child.content = ""
+              if (child.content) {
+                child.content = ''
               }
             })
           }
@@ -226,16 +226,16 @@ export default class IPCs {
             theme: 'light',
             showSide: true,
             mode: 'normal',
+            appColor: 'rgba(255, 69, 0, 0.68)',
+            backgroundColor: 'rgba(255, 255, 255, 1)',
+            backgroundImage: '',
             lang: 'en',
             server: '',
-            editor: {
-              theme: 'vs-dark',
-              fontSize: 14,
-              fontFamily: 'Consolas, "Courier New", monospace',
-              lineHeight: 20,
-              wordWrap: 'on',
-              backgroundColor: '#1e1e1e'
-            }
+            editorFontFamily: 1,
+            editorFontColor: 'rgba(0, 0, 0, 1)',
+            editorLineHeight: 1.6,
+            editorFontSize: 16,
+            editorPadding: 10
           }
           await fse.outputJson(filePath, initData)
           return initData
@@ -259,6 +259,9 @@ export default class IPCs {
 
     ipcMain.on('quit', () => {
       app.quit()
+    })
+    ipcMain.handle('get-clipboard', (event) => {
+      return clipboard.readText()
     })
   }
 }

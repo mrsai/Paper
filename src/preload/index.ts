@@ -14,6 +14,7 @@ const mainAvailChannels: string[] = [
   'get-unused-name',
   'save-directory',
   'read-directory',
+  'get-clipboard',
   'rename-folder',
   'save-settings',
   'get-settings',
@@ -21,7 +22,7 @@ const mainAvailChannels: string[] = [
   'path-join',
   'path-parse'
 ]
-const rendererAvailChannels: string[] = ['msgReceivedVersion','save-current-file']
+const rendererAvailChannels: string[] = ['msgReceivedVersion', 'save-current-file']
 
 contextBridge.exposeInMainWorld('mainApi', {
   send: (channel: string, ...data: any[]): void => {

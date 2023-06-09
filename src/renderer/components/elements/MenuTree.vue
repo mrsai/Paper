@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { nextTick, ref,onMounted } from 'vue'
+import { nextTick, ref, h, computed } from 'vue'
 import { useDirectoryStore } from '@/renderer/store/directory'
 import { ETypes, EExt } from '@/renderer/types/sidebar'
 import { storeToRefs } from 'pinia'
 import ContextMenu from '@imengyu/vue3-context-menu'
+import { useSettingStore } from '@/renderer/store/settings'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { sidebarContextmenu } from '@/renderer/components/elements/contextMenu'
 import { tipsToSave } from '@/renderer/utils/helper'
+import { useI18n } from 'vue-i18n'
 import {
   createLocalFolder,
   selectFolder,
@@ -15,18 +16,93 @@ import {
   renameFile,
   createLocalFile,
   pathJoin,
-  pathParse,
-  saveDirectory,
-  readDirectory,
-  saveLocalFile,
-  selectSaveFolder,
-  openLocalFile
+  saveDirectory
 } from '@/renderer/utils'
 
+const { t } = useI18n()
+
 const { list, selectedKey, expandedKey, selectedFile } = storeToRefs(useDirectoryStore())
-const { create, update, del } = useDirectoryStore()
+const { create, update, del, handleOpenDoc, handleSaveDoc } = useDirectoryStore()
 const treeRef = ref<any>(null)
 const treeInput = ref<any>(null)
+
+const sidebarContextmenu = (event: any, cb: any, type: any) => {
+  let filters: any = []
+  // 不同的点击目标，显示不同的菜单
+  if (type === ETypes.Folder) {
+    filters = ['createFolder']
+  } else if (type === ETypes.File) {
+    filters = ['createMarkdown', 'createRichText', 'createFolder']
+  } else {
+    filters = ['rename', 'sync', 'extractTranslate', 'generateBlog', 'delete']
+  }
+
+  // ;<font-awesome-icon icon="fa-solid fa-user-secret" />
+  const defaultMenu = {
+    // theme: 'mac',
+    x: event.x,
+    y: event.y,
+    zIndex: 3,
+    items: [
+      {
+        key: 'createMarkdown',
+        label: t('contextMenu.create-markdown'),
+        // eslint-disable-next-line no-undef
+        // icon: h(FontAwesomeIcon, { icon: 'fa fa-folder' }),
+        onClick: cb.createMarkdown
+      },
+      {
+        key: 'createRichText',
+        label: t('contextMenu.create-rich-text'),
+        icon: 'el-icon-edit',
+        onClick: cb.createRichText
+      },
+      {
+        key: 'createFolder',
+        label: t('contextMenu.create-folder'),
+        icon: 'el-icon-edit',
+        onClick: cb.createFolder
+      },
+      {
+        key: 'rename',
+        label: t('contextMenu.rename'),
+        icon: 'el-icon-edit',
+        onClick: cb.rename
+      },
+      {
+        key: 'sync',
+        label: t('contextMenu.sync'),
+        icon: 'el-icon-edit',
+        onClick: cb.sync
+      },
+      {
+        key: 'extractTranslate',
+        label: t('contextMenu.translate'),
+        icon: 'el-icon-edit',
+        onClick: cb.extractTranslate
+      },
+      {
+        key: 'generateBlog',
+        label: t('contextMenu.blog'),
+        onClick: cb.generateBlog
+      },
+      {
+        key: 'importMarkdown',
+        label: t('contextMenu.import-file'),
+        onClick: cb.importMarkdown
+      },
+      {
+        key: 'delete',
+        label: t('contextMenu.delete'),
+        onClick: cb.delete
+      }
+    ]
+  }
+
+  const items = defaultMenu.items.filter((item: any) => !filters.includes(item.key))
+  const options = { ...defaultMenu, items }
+  return options
+}
 
 const handleContextMenu = (event: any, data: any, node: any) => {
   const menu = sidebarContextmenu(
@@ -169,36 +245,6 @@ const handleRenameBlur = async (event: any, node: any, data: any) => {
   }
 }
 
-const handleOpenDoc = (data: any) => {
-  if (!data.content && data.path) {
-    openLocalFile(data).then((content) => {
-      update({ ...data, content })
-      selectedKey.value = data.id
-    })
-  } else {
-    selectedKey.value = data.id
-  }
-}
-
-const handleSaveDoc = async (next?) => {
-  let path = selectedFile.value.path
-  const saveData = {...selectedFile.value}
-  if (!path) {
-    path = await selectSaveFolder(selectedFile.value)
-    if (!path) {
-      return false
-    }
-    // 保存文件路径
-    const { dir, name } = await pathParse(path)
-    Object.assign(saveData, { path: dir, name })
-    update(saveData)
-  }
-  saveLocalFile(saveData).then(() => {
-    update({ ...saveData, isSaved: true })
-    next?.()
-  })
-}
-
 const handleUserSelected = (data: any) => {
   if (data.type === ETypes.Folder) {
     return false
@@ -219,19 +265,8 @@ const handleUserSelected = (data: any) => {
   }
 }
 
-readDirectory().then((res) => {
-  try {
-    list.value = res
-  } catch (error) {
-    console.log(error)
-  }
-})
-
-onMounted((): void => {
-  window.mainApi.receive("save-current-file",(event,data)=>{
-    handleSaveDoc()
-  })
-})
+const { settings } = storeToRefs(useSettingStore())
+const isCustom = computed(() => settings.value.theme === 'custom')
 </script>
 
 <template>

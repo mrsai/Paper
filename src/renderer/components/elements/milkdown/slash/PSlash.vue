@@ -1,18 +1,26 @@
-<script lang="ts" setup>
+、<script lang="ts" setup>
 import { editorViewCtx, rootDOMCtx, commandsCtx } from '@milkdown/core'
+import { H1 } from '@icon-park/vue-next'
 import { Ctx } from '@milkdown/ctx'
-import { useSlash } from '../../hooks/useSlash'
+import { useSlash } from './useSlash'
 import { SlashProvider, slashFactory } from '@milkdown/plugin-slash'
-import {
-  commonmark,
-  createCodeBlockCommand,
-  wrapInHeadingCommand
-} from '@milkdown/preset-commonmark'
 import { callCommand } from '@milkdown/utils'
 import { useInstance } from '@milkdown/vue'
 import { usePluginViewContext } from '@prosemirror-adapter/vue'
 import { onMounted, onUnmounted, ref, VNodeRef, watch } from 'vue'
-import { slash } from './slash'
+import { slash } from './index'
+import IconWrap from '@/renderer/components/elements/IconWrap.vue'
+import {
+  commonmark,
+  createCodeBlockCommand,
+  wrapInHeadingCommand,
+  insertHrCommand,
+  wrapInBlockquoteCommand,
+  wrapInBulletListCommand,
+  wrapInOrderedListCommand
+} from '@milkdown/preset-commonmark'
+import { insertTableCommand } from '@milkdown/preset-gfm'
+
 const { view, prevState } = usePluginViewContext()
 
 const { loading, get, removeSlash, handleKeyDown, currentIndex } = useSlash()
@@ -25,9 +33,10 @@ const addCodeBlock = (ctx: Ctx) => {
   removeSlash(ctx)
   ctx.get(commandsCtx).call(createCodeBlockCommand.key)
 }
+
 const list = ref([
   {
-    prefix: '',
+    prefix: 'H1',
     title: 'Large Heading',
     suffix: '',
     command: function (ctx: Ctx) {
@@ -36,7 +45,7 @@ const list = ref([
     }
   },
   {
-    prefix: '',
+    prefix: 'H2',
     title: 'Medium Heading',
     suffix: '',
     command: function (ctx: Ctx) {
@@ -45,7 +54,7 @@ const list = ref([
     }
   },
   {
-    prefix: '',
+    prefix: 'H3',
     title: 'Small Heading',
     suffix: '',
     command: function (ctx: Ctx) {
@@ -54,69 +63,61 @@ const list = ref([
     }
   },
   {
-    prefix: '',
-    title: 'Checked List',
+    prefix: 'OrderedList',
+    title: 'Ordered List',
     suffix: '',
     command: function (ctx: Ctx) {
       removeSlash(ctx)
-      ctx.get(commandsCtx).call(wrapInHeadingCommand.key, 3)
+      ctx.get(commandsCtx).call(wrapInOrderedListCommand.key)
     }
   },
   {
-    prefix: '',
-    title: 'List',
+    prefix: 'ListTop',
+    title: 'Unordered List',
     suffix: '',
     command: function (ctx: Ctx) {
       removeSlash(ctx)
-      ctx.get(commandsCtx).call(wrapInHeadingCommand.key, 3)
+      ctx.get(commandsCtx).call(wrapInBulletListCommand.key)
     }
   },
   {
-    prefix: '',
+    prefix: 'Quote',
     title: 'Quote',
     suffix: '',
     command: function (ctx: Ctx) {
       removeSlash(ctx)
-      ctx.get(commandsCtx).call(wrapInHeadingCommand.key, 3)
+      ctx.get(commandsCtx).call(wrapInBlockquoteCommand.key)
     }
   },
-  // {
-  //   prefix: '',
-  //   title: 'Image',
-  //   suffix: '',
-  //   command: function (ctx: Ctx) {
-  //     removeSlash(ctx)
-  //     ctx.get(commandsCtx).call(insertImageCommand.key)
-  //   }
-  // },
   {
-    prefix: '',
+    prefix: 'InsertTable',
     title: 'Table',
     suffix: '',
     command: function (ctx: Ctx) {
       removeSlash(ctx)
-      ctx.get(commandsCtx).call(wrapInHeadingCommand.key, 3)
+      ctx.get(commandsCtx).call(insertTableCommand.key)
     }
   },
   {
-    prefix: '',
+    prefix: 'CodeOne',
     title: 'Code',
     suffix: '',
     command: function (ctx: Ctx) {
       removeSlash(ctx)
-      ctx.get(commandsCtx).call(wrapInHeadingCommand.key, 3)
+      ctx.get(commandsCtx).call(createCodeBlockCommand.key)
     }
   },
   {
-    prefix: '',
+    prefix: 'DividingLine',
     title: 'Divider',
     suffix: '',
     command: function (ctx: Ctx) {
       removeSlash(ctx)
-      ctx.get(commandsCtx).call(wrapInHeadingCommand.key, 3)
+      ctx.get(commandsCtx).call(insertHrCommand.key)
     }
   }
 ])
+
 const handleKeyDownFn = (e: KeyboardEvent) => handleKeyDown(e, list)
 
 watch([view, prevState], () => {
@@ -179,7 +180,13 @@ onMounted(() => {
       @click="item.command"
       @keydown.enter="item.command"
     >
-      <span class="prefix">{{ item.prefix }}</span>
+      <span class="prefix"
+        ><IconWrap
+          :icon="item.prefix"
+          theme="multi-color"
+          size="16"
+          :fill="['#333', '#2F88FF', '#FFF', '#43CCF8']"
+      /></span>
       <span>{{ item.title }}</span>
       <span class="suffix">{{ item.suffix }}</span>
     </li>
@@ -188,9 +195,10 @@ onMounted(() => {
 <style scoped>
 .slash-box {
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-  border: 1px solid #626aef;
+  border: 3px solid #626aef;
   border-radius: 3px;
   display: none;
+  background-color: #fff;
 }
 .slash-box li {
   display: flex;
@@ -200,10 +208,9 @@ onMounted(() => {
 }
 .prefix,
 .suffix {
-  padding: 0 15px;
+  padding: 0 20px;
 }
 .active {
-  background: #626aef;
-  color: #fff;
+  background: rgba(0, 0, 0, 0.1);
 }
 </style>

@@ -1,6 +1,5 @@
 header.el-header {
   --el-header-height: 36px;
-  -webkit-app-drag: drag;
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
   box-sizing: content-box;
   padding: 0;
@@ -13,7 +12,7 @@ main.el-main {
   padding: 0 0 0 0;
 }
 
-.el-tree {
+div.el-tree {
   background: transparent;
 }
 

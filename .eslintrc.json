@@ -27,6 +27,7 @@
     "no-control-regex": 0,
     "no-useless-constructor": 0,
     "node/no-deprecated-api": 0,
-    "no-unused-vars": 0
+    "no-unused-vars": 0,
+    "vue/no-reserved-component-names": 0
   }
 }

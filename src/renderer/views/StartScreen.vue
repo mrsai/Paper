@@ -1,55 +1,47 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
 import { useDirectoryStore } from '@/renderer/store/directory'
-import { selectFolder,openLocalFile,pathParse } from '@/renderer/utils'
-import {onBeforeUnmount, onMounted} from "vue";
-const { selectedKey } = storeToRefs(useDirectoryStore())
-const { createTemp } = useDirectoryStore()
+import { selectFolder } from '@/renderer/utils'
+import { onBeforeUnmount, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 
-const handleCreateFile = () => {
-  const temp = createTemp({
-    name: 'untitled',
-    content: '# untitled\n ... '
-  })
-  selectedKey.value = temp.id
-}
+const { t } = useI18n()
 
-const openFileByPath = async (path) => {
-  const {dir,name,ext} = await pathParse(path)
-  const createData = { name, ext, path:dir}
-  const content = await openLocalFile(createData)
-  const temp = createTemp({...createData,content})
-  selectedKey.value = temp.id
-}
-const handleOpenFile = async (event) => {
+// Open Files
+const { handleCreateTemp, openFileByPath } = useDirectoryStore()
+const handleOpenFile = async (event: MouseEvent) => {
   event.preventDefault()
-  const path = await selectFolder({properties: ['openFile']})
-  path && await openFileByPath(path)
+  const path = await selectFolder({ properties: ['openFile'] })
+  path && (await openFileByPath(path))
 }
-const dragoverHandler = (event)=> {
+
+// Darg Events
+const dragoverHandler = (event: MouseEvent) => {
   event.preventDefault()
 }
-
-const dropHandler = async (event)=> {
+const dropHandler = async (event: any) => {
   event.preventDefault()
   const path = event.dataTransfer.files[0].path
-  path && await openFileByPath(path)
+  path && (await openFileByPath(path))
 }
-onBeforeUnmount(()=>{
-  document.removeEventListener("dragover", dragoverHandler)
-  document.removeEventListener("drop", dropHandler)
+onBeforeUnmount(() => {
+  document.removeEventListener('dragover', dragoverHandler)
+  document.removeEventListener('drop', dropHandler)
 })
-onMounted(()=>{
-  document.addEventListener("dragover", dragoverHandler)
-  document.addEventListener("drop", dropHandler)
+onMounted(() => {
+  document.addEventListener('dragover', dragoverHandler)
+  document.addEventListener('drop', dropHandler)
 })
 </script>
 <template>
   <div class="start-screen">
     <div class="logo no-select" @dblclick="handleOpenFile">PAPER<span class="blue">.</span></div>
     <div class="flex-row justify-between button-groups">
-      <div class="items-full start-items" @click="handleCreateFile">新建文件</div>
-      <div class="items-full start-items" @click="handleOpenFile">打开文件</div>
+      <div class="items-full start-items" @click="handleCreateTemp">{{
+        $t('app.create-markdown')
+      }}</div>
+      <div class="items-full start-items" @click="handleOpenFile">{{
+        $t('app.open-markdown')
+      }}</div>
     </div>
   </div>
 </template>

@@ -16,21 +16,21 @@ export default createRouter({
           path: 'home',
           component: () => import('@/renderer/views/HomeScreen.vue'),
           meta: {
-            titleKey: 'title.second'
+            titleKey: 'title.home'
           }
         },
         {
           path: 'message',
           component: () => import('@/renderer/views/HomeScreen.vue'),
           meta: {
-            titleKey: 'title.second'
+            titleKey: 'title.message'
           }
         },
         {
           path: '/settings',
-          component: () => import('@/renderer/views/HomeScreen.vue'),
+          component: () => import('@/renderer/views/SettingsScreen.vue'),
           meta: {
-            titleKey: 'title.second'
+            titleKey: 'title.settings'
           }
         },
         {

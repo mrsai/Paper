@@ -66,5 +66,23 @@
     "documentation": "Documentation",
     "online": "Source Code",
     "about": "About"
+  },
+  "setting": {
+    "title": "Settings",
+    "theme": "Theme",
+    "light": "Light Theme",
+    "dark": "Dark Theme",
+    "custom": "Custom",
+    "appbar-color": "APP Color",
+    "background-color": "Background Color",
+    "background-image": "Background Image",
+    "font-family": "Font Family",
+    "font-size": "Font Size",
+    "font-color": "Font Color",
+    "line-height": "Line Height",
+    "save-setting": "Save Settings",
+    "reset-setting": "Reset Default",
+    "font-song": "Song",
+    "font-system": "System"
   }
 }

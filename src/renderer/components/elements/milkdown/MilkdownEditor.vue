@@ -3,18 +3,17 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch, withDefaults } from 'vue'
-
-import { Editor, rootCtx, EditorStatus, defaultValueCtx } from '@milkdown/core'
+import { ref, watch } from 'vue'
+import { Editor, rootCtx } from '@milkdown/core'
 import { nord } from '@milkdown/theme-nord'
 import { Milkdown, useEditor } from '@milkdown/vue'
 import { commonmark } from '@milkdown/preset-commonmark'
 import { replaceAll } from '@milkdown/utils'
 import { listener, listenerCtx } from '@milkdown/plugin-listener'
-// import { Ctx, MilkdownPlugin } from '@milkdown/ctx'
 import { usePluginViewFactory } from '@prosemirror-adapter/vue'
-import SlashPlug from './SlashPlug.vue'
+import { gfm } from '@milkdown/preset-gfm'
 import { slash } from './slash'
+import PSlash from './slash/PSlash.vue'
 
 const editor = ref(null as Editor | null)
 // const slash = slashFactory('slashMenu') satisfies MilkdownPlugin[]
@@ -27,8 +26,20 @@ let isLoadANewArticle = false
 // const debouncedUpdate = useDebounceFn((markdown: any) => {
 //   update({ ...selectedFile.value, content: markdown, isSaved: false })
 // }, 500)
-const props = withDefaults(defineProps<{ content?: string }>(), {
-  content: ''
+// const props = defineProps({
+//   content: '',
+//   unique: ''
+// })
+
+const props = defineProps({
+  content: {
+    type: String,
+    default: ''
+  },
+  unique: {
+    type: String,
+    default: ''
+  }
 })
 const emit = defineEmits(['on-change', 'on-init'])
 
@@ -48,7 +59,7 @@ useEditor((root) => {
           }
         },
         view: pluginViewFactory({
-          component: SlashPlug
+          component: PSlash
         })
       })
     })
@@ -64,6 +75,7 @@ useEditor((root) => {
     .use(slash)
     .use(listener)
     .use(commonmark)
+    .use(gfm)
 
   it.create().then(() => {
     editor.value = it
@@ -74,8 +86,8 @@ useEditor((root) => {
 })
 
 watch(
-  () => props.content,
-  (newVal) => {
+  () => [props.unique, props.content],
+  () => {
     isLoadANewArticle = true
     editor.value?.action(replaceAll(props.content))
   }

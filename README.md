@@ -40,5 +40,7 @@ Paper 引入了富文本编辑模式，保证文件本地存储的同时，提�
 ## 资源
 
     右键菜单  https://imengyu.top/pages/vue3-context-menu-docs/
+    https://remirror.io/
     文件结构和UI element-pluss
     icon awesome-font
+    编辑的时候要禁用刷新键

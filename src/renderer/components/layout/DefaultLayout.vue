@@ -1,10 +1,6 @@
 <script setup lang="ts">
-// import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import HeaderBar from '@/renderer/components/elements/HeaderBar.vue'
-import SideBar from '@/renderer/components/elements/SideBar.vue'
-// import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
-// const locale = ref(zhCn)
 import { useSettingStore } from '@/renderer/store/settings'
 const { settings } = storeToRefs(useSettingStore())
 </script>

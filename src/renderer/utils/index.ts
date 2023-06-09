@@ -22,8 +22,8 @@ export default class Utils {
     return await window.mainApi.invoke('create-local-file', fileData)
   }
 
-  static async selectFolder(options?:any): Promise<any> {
-    return await window.mainApi.invoke('open-file-dialog',options)
+  static async selectFolder(options?: any): Promise<any> {
+    return await window.mainApi.invoke('open-file-dialog', options)
   }
 
   static async selectSaveFolder(fileData: any): Promise<any> {
@@ -73,6 +73,10 @@ export default class Utils {
   static async getSettings(): Promise<any> {
     return await window.mainApi.invoke('get-settings')
   }
+
+  static async getClipboard(): Promise<any> {
+    return await window.mainApi.invoke('get-clipboard')
+  }
 }
 
 export const {
@@ -93,5 +97,6 @@ export const {
   openLocalFile,
   saveLocalFile,
   selectSaveFolder,
-  pathParse
+  pathParse,
+  getClipboard
 } = Utils
