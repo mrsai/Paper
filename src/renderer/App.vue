@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import { useSettingStore } from '@/renderer/store/settings'
 import { useDirectoryStore } from '@/renderer/store/directory'
-import { readDirectory, getSettings } from './utils'
-import { onBeforeUnmount } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { readDirectory, getSettings, listenFileOpen, listenFileSave, quitApp } from './utils'
+import { onBeforeUnmount, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
+import { ElMessageBox } from 'element-plus'
+const { updateList, openFileByPath, handleSaveDoc } = useDirectoryStore()
+const { selectedKey, selectedFile } = storeToRefs(useDirectoryStore())
 
+const { t } = useI18n()
 // 准备数据，包括设置和目录结构数据
 const preparer = async () => {
   try {
@@ -13,7 +19,7 @@ const preparer = async () => {
     const directory = await readDirectory()
     // 更新store
     useSettingStore().updateSettings(settings)
-    useDirectoryStore().updateList(directory)
+    updateList(directory)
   } catch (error) {
     console.log('读取配置文件和目录失败', error)
   }
@@ -30,6 +36,44 @@ const keyFreshHandler = (event: KeyboardEvent) => {
 }
 window.addEventListener('keydown', keyFreshHandler)
 onBeforeUnmount(() => window.removeEventListener('keydown', keyFreshHandler))
+
+const unSavedHandler = () => {
+  ElMessageBox.confirm(t('tips.save-title'), t('tips.title'), {
+    distinguishCancelAndClose: true,
+    confirmButtonText: t('tips.save-exist'),
+    cancelButtonText: t('tips.save-not-exist'),
+    type: 'warning'
+  })
+    .then(() => {
+      handleSaveDoc(() => {
+        quitApp()
+      })
+    })
+    .catch((action) => {
+      if (action === 'cancel') {
+        quitApp()
+      }
+    })
+}
+// 监听全局事件
+onMounted(() => {
+  listenFileOpen((path: string) => {
+    path && openFileByPath(path)
+  })
+  listenFileSave(() => {
+    // 当前打开了文件
+    if (selectedKey.value) {
+      // 当前文件已经保存
+      if (selectedFile.value?.isSaved) {
+        quitApp()
+      } else {
+        unSavedHandler()
+      }
+    } else {
+      quitApp()
+    }
+  })
+})
 </script>
 
 <template>

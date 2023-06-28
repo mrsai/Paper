@@ -50,6 +50,10 @@ export default class Utils {
     return await window.mainApi.invoke('rename-file', JSON.stringify(data), newName)
   }
 
+  static async copyFile(from: string, to: string): Promise<any> {
+    return await window.mainApi.invoke('copy-file', from, to)
+  }
+
   static async pathJoin(...paths: string[]): Promise<string> {
     return await window.mainApi.invoke('path-join', ...paths)
   }
@@ -77,6 +81,22 @@ export default class Utils {
   static async getClipboard(): Promise<any> {
     return await window.mainApi.invoke('get-clipboard')
   }
+
+  static async listenFileOpen(cb: Function): Promise<void> {
+    window.mainApi.receive('open-associate-file', (event: any, data: any) => {
+      data && cb?.(data)
+    })
+  }
+
+  static async listenFileSave(cb: Function): Promise<void> {
+    window.mainApi.receive('save-current-file', (event: any, data?: any) => {
+      cb?.(data)
+    })
+  }
+
+  static async quitApp(): Promise<void> {
+    return window.mainApi.send('quit')
+  }
 }
 
 export const {
@@ -98,5 +118,9 @@ export const {
   saveLocalFile,
   selectSaveFolder,
   pathParse,
-  getClipboard
+  getClipboard,
+  listenFileOpen,
+  copyFile,
+  listenFileSave,
+  quitApp
 } = Utils

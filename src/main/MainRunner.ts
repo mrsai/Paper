@@ -1,6 +1,6 @@
-import { app, BrowserWindow, RenderProcessGoneDetails } from 'electron'
+import { app, BrowserWindow, RenderProcessGoneDetails, Menu } from 'electron'
 import Constants from './utils/Constants'
-import IPCs from './IPCs'
+import IPCs, { openAssociatedFile, notifyToSaveDoc, shouldQuite } from './IPCs'
 import { registerShortcuts, unRegisterShortcuts } from './shortcut'
 
 const exitApp = (mainWindow: BrowserWindow): void => {
@@ -25,10 +25,17 @@ export const createMainWindow = async (mainWindow: BrowserWindow): Promise<Brows
   })
 
   mainWindow.setMenu(null)
+  // Menu.setApplicationMenu(null)
 
-  mainWindow.on('close', (event: Event): void => {
-    event.preventDefault()
-    exitApp(mainWindow)
+  // 此地有bug，需要修复，会造成一个死循环，引入shouldQuite带来一个新问题，二次点击没效果。
+  // 要解决这个问题，需要渲染线程来决定什么时候关闭窗口，而不是主线程。
+  mainWindow.on('close', async (event: Event) => {
+    if (shouldQuite) {
+      exitApp(mainWindow)
+    } else {
+      event.preventDefault()
+      notifyToSaveDoc(mainWindow)
+    }
   })
 
   mainWindow.webContents.on('did-frame-finish-load', (): void => {
@@ -42,16 +49,17 @@ export const createMainWindow = async (mainWindow: BrowserWindow): Promise<Brows
     mainWindow.show()
     mainWindow.focus()
     mainWindow.setAlwaysOnTop(false)
+    openAssociatedFile(mainWindow, '')
   })
 
-  mainWindow.on('focus', (): void => {
-    mainWindow.show()
-    registerShortcuts(mainWindow)
-  })
+  // mainWindow.on('focus', (): void => {
+  //   mainWindow.show()
+  //   registerShortcuts(mainWindow)
+  // })
 
-  mainWindow.on('blur', (): void => {
-    unRegisterShortcuts(mainWindow)
-  })
+  // mainWindow.on('blur', (): void => {
+  //   unRegisterShortcuts(mainWindow)
+  // })
 
   if (Constants.IS_DEV_ENV) {
     await mainWindow.loadURL(Constants.APP_INDEX_URL_DEV)

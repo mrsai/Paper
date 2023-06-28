@@ -1,17 +1,13 @@
 、<script lang="ts" setup>
-import { editorViewCtx, rootDOMCtx, commandsCtx } from '@milkdown/core'
-import { H1 } from '@icon-park/vue-next'
+import { rootDOMCtx, commandsCtx } from '@milkdown/core'
 import { Ctx } from '@milkdown/ctx'
 import { useSlash } from './useSlash'
 import { SlashProvider, slashFactory } from '@milkdown/plugin-slash'
-import { callCommand } from '@milkdown/utils'
-import { useInstance } from '@milkdown/vue'
 import { usePluginViewContext } from '@prosemirror-adapter/vue'
 import { onMounted, onUnmounted, ref, VNodeRef, watch } from 'vue'
 import { slash } from './index'
 import IconWrap from '@/renderer/components/elements/IconWrap.vue'
 import {
-  commonmark,
   createCodeBlockCommand,
   wrapInHeadingCommand,
   insertHrCommand,
@@ -23,16 +19,11 @@ import { insertTableCommand } from '@milkdown/preset-gfm'
 
 const { view, prevState } = usePluginViewContext()
 
-const { loading, get, removeSlash, handleKeyDown, currentIndex } = useSlash()
+const { get, removeSlash, handleKeyDown, currentIndex } = useSlash()
 
 const divRef = ref<VNodeRef>()
 
 let slashProvider: SlashProvider
-
-const addCodeBlock = (ctx: Ctx) => {
-  removeSlash(ctx)
-  ctx.get(commandsCtx).call(createCodeBlockCommand.key)
-}
 
 const list = ref([
   {
@@ -137,7 +128,7 @@ onMounted(() => {
         return false
       }
       // Display the menu if the last character is `/`.
-      return !!(currentText?.endsWith('、') || currentText?.endsWith('/'))
+      return !!currentText?.endsWith('/')
     },
     tippyOptions: {
       onShow() {
@@ -169,28 +160,34 @@ onMounted(() => {
   })
   slashProvider.update(view.value, prevState.value)
 })
+
+const handleClick = (item: any) => {
+  get()?.action(item.command)
+}
 </script>
 
 <template>
-  <ul ref="divRef" class="slash-box">
-    <li
-      v-for="(item, index) in list"
-      :key="item.title"
-      :class="{ active: index === currentIndex }"
-      @click="item.command"
-      @keydown.enter="item.command"
-    >
-      <span class="prefix"
-        ><IconWrap
-          :icon="item.prefix"
-          theme="multi-color"
-          size="16"
-          :fill="['#333', '#2F88FF', '#FFF', '#43CCF8']"
-      /></span>
-      <span>{{ item.title }}</span>
-      <span class="suffix">{{ item.suffix }}</span>
-    </li>
-  </ul>
+  <div ref="divRef" class="slash-box">
+    <ul>
+      <li
+        v-for="(item, index) in list"
+        :key="item.title"
+        :class="{ active: index === currentIndex }"
+        @click="handleClick(item)"
+        @keydown.enter="item.command"
+      >
+        <span class="prefix"
+          ><IconWrap
+            :icon="item.prefix"
+            theme="multi-color"
+            size="16"
+            :fill="['#333', '#2F88FF', '#FFF', '#43CCF8']"
+        /></span>
+        <span>{{ item.title }}</span>
+        <span class="suffix">{{ item.suffix }}</span>
+      </li>
+    </ul>
+  </div>
 </template>
 <style scoped>
 .slash-box {

@@ -83,5 +83,11 @@
     "reset-setting": "恢复默认",
     "font-song": "宋体",
     "font-system": "系统默认"
+  },
+  "tips":{
+    "title": "提示信息",
+    "save-title":"您有文件尚未保存，确定要退出吗",
+    "save-exist":"保存并且退出",
+    "save-not-exist":"直接退出"
   }
 }

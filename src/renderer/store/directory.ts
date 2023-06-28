@@ -28,10 +28,13 @@ export const useDirectoryStore = defineStore('Directory', {
             return item
           }
           if (item.children) {
-            return find(item.children)
+            const found = find(item.children)
+            if (found) return found
           }
         }
+        return null
       }
+      console.log('zage')
       return find(state.list)
     }
   },
@@ -74,6 +77,7 @@ export const useDirectoryStore = defineStore('Directory', {
       } else {
         this.list?.push(item)
       }
+      return item
     },
     update(data: any) {
       if (this.temporary && data.isTemporary) {
@@ -140,15 +144,20 @@ export const useDirectoryStore = defineStore('Directory', {
         this.selectedKey = data.id
       }
     },
-    async handleSaveDoc(next?: Function) {
-      if (this.selectedFile && this.selectedFile.id && !this.selectedFile.isSaved) {
+    async handleSaveDoc(confirm?: Function, cancel?: Function) {
+      if (
+        this.selectedFile &&
+        this.selectedFile.id &&
+        !this.selectedFile.isSaved &&
+        this.selectedFile.content
+      ) {
         let path = this.selectedFile.path
         const saveData = { ...this.selectedFile }
         if (!path) {
           path = await selectSaveFolder(this.selectedFile)
           if (!path) {
             // 取消保存，直接执行下一步的函数
-            next?.()
+            cancel?.()
             return false
           }
           const { dir, name } = await pathParse(path)
@@ -157,10 +166,10 @@ export const useDirectoryStore = defineStore('Directory', {
         }
         saveLocalFile(saveData).then(() => {
           this.update({ ...saveData, isSaved: true })
-          next?.()
+          confirm?.()
         })
       } else {
-        next?.()
+        confirm?.()
       }
     },
     async handleCreateTemp() {

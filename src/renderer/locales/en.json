@@ -84,5 +84,11 @@
     "reset-setting": "Reset Default",
     "font-song": "Song",
     "font-system": "System"
+  },
+  "tips":{
+    "title": "Warn",
+    "save-title":"File has not been saved, are you sure to exit ?",
+    "save-exist":"Save and exit",
+    "save-not-exist":"Exit"
   }
 }

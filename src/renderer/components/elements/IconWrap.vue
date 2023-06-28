@@ -11,7 +11,15 @@ import {
   CodeOne,
   DividingLine,
   OrderedList,
-  CloseOne
+  CloseOne,
+  Delete,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  ArrowDown,
+  AlignTextLeft,
+  AlignTextCenter,
+  AlignTextRight
 } from '@icon-park/vue-next'
 
 export default defineComponent({
@@ -26,7 +34,15 @@ export default defineComponent({
     CodeOne,
     DividingLine,
     OrderedList,
-    CloseOne
+    CloseOne,
+    Delete,
+    ArrowLeft,
+    ArrowRight,
+    ArrowUp,
+    ArrowDown,
+    AlignTextLeft,
+    AlignTextCenter,
+    AlignTextRight
   },
   props: {
     icon: {

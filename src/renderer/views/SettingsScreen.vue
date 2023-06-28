@@ -99,8 +99,11 @@ const onSubmit = () => {
 
 defineExpose({ initSettings })
 </script>
-<style scoped>
+<style scoped lang="scss">
 .setting-content {
   margin: 0 60px;
+  .el-button {
+    background-color: var(--el-color-primary);
+  }
 }
 </style>

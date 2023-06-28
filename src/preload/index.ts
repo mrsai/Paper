@@ -20,9 +20,16 @@ const mainAvailChannels: string[] = [
   'get-settings',
   'rename-file',
   'path-join',
-  'path-parse'
+  'path-parse',
+  'copy-file',
+  'quit'
 ]
-const rendererAvailChannels: string[] = ['msgReceivedVersion', 'save-current-file']
+const rendererAvailChannels: string[] = [
+  'msgReceivedVersion',
+  'save-current-file',
+  'open-associate-file',
+  'quit'
+]
 
 contextBridge.exposeInMainWorld('mainApi', {
   send: (channel: string, ...data: any[]): void => {

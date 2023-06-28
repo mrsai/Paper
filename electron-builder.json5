@@ -1,6 +1,6 @@
 {
-  productName: 'Vutron',
-  appId: 'com.vutron.vutron',
+  productName: 'Paper',
+  appId: 'com.paper.app',
   asar: true,
   extends: null,
   compression: 'maximum',
@@ -18,6 +18,20 @@
     'dist/**/*',
     '!docs/**/*',
     '!release/**/*'
+  ],
+  fileAssociations: [
+    {
+      ext: 'md',
+      name: 'Markdown',
+      description: 'Paper Markdown File',
+      role: 'Editor'
+    },
+    {
+      ext: 'rt',
+      name: 'RichText',
+      description: 'Paper RichText File, It is Html',
+      role: 'Editor'
+    }
   ],
   mac: {
     bundleVersion: '1.0',

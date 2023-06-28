@@ -1,8 +1,10 @@
-import { app, WebContents, RenderProcessGoneDetails } from 'electron'
+import { app, WebContents, RenderProcessGoneDetails, Menu } from 'electron'
 import Constants from './utils/Constants'
 import { createErrorWindow, createMainWindow } from './MainRunner'
 import { macOSDisableDefaultMenuItem } from './utils/Menus'
 import { unRegisterShortcuts } from './shortcut'
+import { openAssociatedFile } from './IPCs'
+import Update from './Updater'
 
 let mainWindow
 let errorWindow
@@ -10,6 +12,8 @@ let errorWindow
 app.on('ready', () => {
   macOSDisableDefaultMenuItem()
   mainWindow = createMainWindow(mainWindow)
+  // 自动更新功能尚未验证
+  Update.check()
 })
 
 app.on('activate', () => {
@@ -18,7 +22,21 @@ app.on('activate', () => {
   }
 })
 
-app.on('window-all-closed', () => {
+app.on('will-finish-launching', () => {
+  app.on('open-file', (event, path) => {
+    event.preventDefault()
+    openAssociatedFile(mainWindow, path)
+    process.argv.push(path)
+  })
+})
+app.on('second-instance', (event, argv) => {
+  if (process.platform !== 'darwin') {
+    const path = argv[argv.length - 1]
+    path && openAssociatedFile(mainWindow, path)
+  }
+})
+
+app.on('window-all-closed', (event) => {
   mainWindow = null
   errorWindow = null
 
@@ -27,7 +45,7 @@ app.on('window-all-closed', () => {
   }
 })
 
-app.on('will-quit', () => {
+app.on('will-quit', (event) => {
   unRegisterShortcuts(mainWindow)
 })
 

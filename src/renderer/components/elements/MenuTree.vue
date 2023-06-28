@@ -14,9 +14,11 @@ import {
   getUnusedName,
   renameFolder,
   renameFile,
+  copyFile,
   createLocalFile,
   pathJoin,
-  saveDirectory
+  saveDirectory,
+  pathParse
 } from '@/renderer/utils'
 
 const { t } = useI18n()
@@ -34,7 +36,7 @@ const sidebarContextmenu = (event: any, cb: any, type: any) => {
   } else if (type === ETypes.File) {
     filters = ['createMarkdown', 'createRichText', 'createFolder']
   } else {
-    filters = ['rename', 'sync', 'extractTranslate', 'generateBlog', 'delete']
+    filters = ['rename', 'sync', 'extractTranslate', 'generateBlog', 'delete', 'importMarkdown']
   }
 
   // ;<font-awesome-icon icon="fa-solid fa-user-secret" />
@@ -55,7 +57,8 @@ const sidebarContextmenu = (event: any, cb: any, type: any) => {
         key: 'createRichText',
         label: t('contextMenu.create-rich-text'),
         icon: 'el-icon-edit',
-        onClick: cb.createRichText
+        onClick: cb.createRichText,
+        disabled: true
       },
       {
         key: 'createFolder',
@@ -73,18 +76,21 @@ const sidebarContextmenu = (event: any, cb: any, type: any) => {
         key: 'sync',
         label: t('contextMenu.sync'),
         icon: 'el-icon-edit',
-        onClick: cb.sync
+        onClick: cb.sync,
+        disabled: true
       },
       {
         key: 'extractTranslate',
         label: t('contextMenu.translate'),
         icon: 'el-icon-edit',
-        onClick: cb.extractTranslate
+        onClick: cb.extractTranslate,
+        disabled: true
       },
       {
         key: 'generateBlog',
         label: t('contextMenu.blog'),
-        onClick: cb.generateBlog
+        onClick: cb.generateBlog,
+        disabled: true
       },
       {
         key: 'importMarkdown',
@@ -204,7 +210,21 @@ const handleContextMenu = (event: any, data: any, node: any) => {
       },
       extractTranslate() {},
       sync() {},
-      generateBlog() {}
+      generateBlog() {},
+      async importMarkdown() {
+        const path = await selectFolder({ properties: ['openFile'] })
+        if (path) {
+          // 判断是否是已经存在该文件
+
+          const { name, ext } = await pathParse(path)
+          const newPath = await pathJoin(data.path, data.name)
+          const createData = { name, ext, pid: data.id, path: newPath, isSaved: true }
+          create(createData)
+          await saveDirectory(list.value)
+          const newFile = await pathJoin(newPath, name + ext)
+          await copyFile(path, newFile)
+        }
+      }
     },
     data.type
   )
@@ -326,7 +346,7 @@ const isCustom = computed(() => settings.value.theme === 'custom')
   flex: 1;
   display: flex;
   align-items: center;
-  justify-content: start;
+  justify-content: flex-start;
   padding: 10px 0;
 }
 .custom-input {
@@ -338,7 +358,7 @@ const isCustom = computed(() => settings.value.theme === 'custom')
   flex: 1;
   display: flex;
   align-items: center;
-  justify-content: start;
+  justify-content: flex-start;
   padding: 10px 0;
 }
 .custom-title {

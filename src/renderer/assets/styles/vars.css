@@ -1,3 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.primary {
+  background-color: #626aef;
+}
+
 header.el-header {
   --el-header-height: 36px;
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
@@ -16,7 +25,7 @@ div.el-tree {
   background: transparent;
 }
 
-.el-tree__empty-block {
+div.el-tree__empty-block {
   min-height: 0;
 }
 
@@ -33,7 +42,6 @@ div.editor {
   min-height: 100%;
   overflow: auto;
   padding-bottom: 2em;
-  text-align: justify;
 }
 
 ::-webkit-scrollbar {
@@ -51,4 +59,32 @@ div.editor {
 div.ProseMirror-focused ::-webkit-scrollbar {
   display: block;
   /* Chrome Safari */
+}
+
+
+
+li p {
+  margin: 0 !important;
+}
+
+li p+p {
+  margin-top: 2px !important;
+}
+
+li::after {
+  all: unset !important;
+}
+
+ul,
+ol {
+  padding: 0 !important;
+  margin-left: 4px !important;
+}
+
+.ProseMirror p>img:not(.ProseMirror-separator) {
+  width: 100%;
+}
+
+.el-button.el-button--primary {
+  background-color: var(--el-color-primary);
 }

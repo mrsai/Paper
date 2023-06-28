@@ -1,24 +1,27 @@
 <template>
-  <MilkdownProvider>
-    <ProsemirrorAdapterProvider>
-      <MilkdownEditor
-        :content="content"
-        :unique="selectedFile.id"
-        @on-change="onContentChange"
-        @on-init="onEditorInit"
-      />
-    </ProsemirrorAdapterProvider>
-  </MilkdownProvider>
+  <div>
+    <MilkdownProvider>
+      <ProsemirrorAdapterProvider>
+        <MilkdownEditor
+          :content="content"
+          :unique="selectedFile.id"
+          @on-change="onContentChange"
+          @on-init="onEditorInit"
+        />
+      </ProsemirrorAdapterProvider>
+    </MilkdownProvider>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch, nextTick } from 'vue'
 import { ProsemirrorAdapterProvider } from '@prosemirror-adapter/vue'
 import { MilkdownProvider } from '@milkdown/vue'
 import MilkdownEditor from './MilkdownEditor.vue'
 import { useDirectoryStore } from '@/renderer/store/directory'
 import { useAutoParseStore } from '@/renderer/store/auto-parse'
 import { storeToRefs } from 'pinia'
+import { listenFileSave, quitApp } from '@/renderer/utils'
 const { update, handleSaveDoc } = useDirectoryStore()
 const { selectedFile } = storeToRefs(useDirectoryStore())
 
@@ -27,7 +30,7 @@ const content = ref('')
 let tempContent = ''
 const onContentChange = (newContent: string) => {
   tempContent = newContent
-  update({ ...selectedFile.value, content: content.value, isSaved: false })
+  update({ ...selectedFile.value, content: newContent, isSaved: false })
 }
 
 const onEditorInit = (editor: any) => {

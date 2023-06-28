@@ -3,6 +3,8 @@ import { join, parse } from 'path'
 import { BrowserWindow, ipcMain, shell, dialog, app, clipboard } from 'electron'
 import Constants from './utils/Constants'
 
+let shouldQuite = false
+
 /*
  * IPC Communications
  * TODO：
@@ -23,6 +25,7 @@ export default class IPCs {
     ipcMain.handle('open-file-dialog', async (event, options: any = {}) => {
       const result = await dialog.showOpenDialog(window, {
         title: 'Select the Folder to Save',
+        filters: [{ name: 'Markdown', extensions: ['md'] }],
         properties: ['openDirectory'],
         ...options
       })
@@ -97,7 +100,6 @@ export default class IPCs {
     })
 
     ipcMain.handle('save-local-file', async (event, data) => {
-      console.log(data)
       let filePath = ''
       try {
         const { path, name, ext, content } = JSON.parse(data)
@@ -258,10 +260,38 @@ export default class IPCs {
     })
 
     ipcMain.on('quit', () => {
+      shouldQuite = true
       app.quit()
     })
+
     ipcMain.handle('get-clipboard', (event) => {
       return clipboard.readText()
     })
+
+    ipcMain.handle('copy-file', async (event, from, to) => {
+      try {
+        await fse.copy(from, to)
+      } catch (err) {
+        console.error(`Error copy file from ${from} to ${to}: ${err}`)
+        throw err
+      }
+    })
   }
 }
+
+export const openAssociatedFile = (mainWindow: any, filePath: string) => {
+  if (!filePath) {
+    const argv = process.argv
+    const temp = argv[argv.length - 1]
+    if (temp && (temp.indexOf('.md') > -1 || temp.indexOf('.rt') > -1)) {
+      filePath = temp
+    }
+  }
+  mainWindow.webContents.send('open-associate-file', filePath)
+}
+
+export const notifyToSaveDoc = (mainWindow: any) => {
+  mainWindow.webContents.send('save-current-file')
+}
+
+export { shouldQuite }
